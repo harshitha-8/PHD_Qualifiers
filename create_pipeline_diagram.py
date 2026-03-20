@@ -135,7 +135,7 @@ def create_diagram(save_path, fmt="png"):
             ha="left", va="center", fontsize=8.5, fontweight="bold",
             color=COL_CV, fontstyle="italic")
 
-    section_border(0.10, 8.70, 9.80, 3.30, COL_CV)
+    section_border(0.10, 8.78, 9.80, 3.22, COL_CV)
 
     cv_y = 11.05
     positions = [1.0, 2.85, 4.70, 6.55, 8.40]
@@ -168,11 +168,11 @@ def create_diagram(save_path, fmt="png"):
              color=COL_CV, fontsize=7.5, sublabel_size=5.3)
 
     # Morphological Refinement bottom-edge --> Bloom Detection top-edge
-    # Arrow starts at the bottom-center of box[4], ends at the top-center of Bloom
-    arrow(boxes[4]["cx"], boxes[4]["b"],
-          bl["cx"], bl["t"],
-          cs="arc3,rad=-0.35",
-          label="structured output", lbl_off=(1.2, 0.15))
+    # Start from left-of-center bottom edge of box[4] for a cleaner downward arc
+    arrow(boxes[4]["l"] + 0.25, boxes[4]["b"],
+          bl["r"], bl["cy"],
+          cs="arc3,rad=-0.30",
+          label="structured output", lbl_off=(0.15, 0.35))
 
     # ==================================================================
     #  (2) DECISION & PROMPT
@@ -181,7 +181,7 @@ def create_diagram(save_path, fmt="png"):
             ha="left", va="center", fontsize=8.5, fontweight="bold",
             color=COL_DECIDE, fontstyle="italic")
 
-    section_border(0.10, 5.78, 9.80, 2.95, COL_DECIDE)
+    section_border(0.10, 5.82, 9.80, 2.85, COL_DECIDE)
 
     dec = diamond(5.0, 7.85, 0.75, 0.55,
                   "N >= 10-15\nblooms?",
@@ -219,7 +219,7 @@ def create_diagram(save_path, fmt="png"):
             ha="left", va="center", fontsize=8.5, fontweight="bold",
             color=COL_OLLAMA, fontstyle="italic")
 
-    section_border(0.10, 2.80, 9.80, 2.93, COL_OLLAMA)
+    section_border(0.10, 2.85, 9.80, 2.83, COL_OLLAMA)
 
     ol = box(5.0, 4.85, 2.7, 0.78, "Ollama Server",
              "127.0.0.1:11434, local\n"
