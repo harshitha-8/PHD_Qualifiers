@@ -32,7 +32,11 @@ BG_COL      = "#FFFFFF"
 LABEL_COL   = "#666666"
 
 # Consistent arrowhead separation from shape edges (in points, not data coords)
-SHRINK_PTS = 2  # small visual clearance so arrowhead doesn't overlap border
+# For -|> arrowstyle with mutation_scale=10, the head is ~5 pts long.
+# shrinkA pulls the tail back from the source edge; shrinkB pulls the head
+# back from the target edge so the tip touches the border without penetrating.
+SHRINK_A = 0   # tail starts at the source edge
+SHRINK_B = 5   # tip of arrowhead lands exactly at the target edge
 
 
 def create_diagram(save_path, fmt="png"):
@@ -86,7 +90,7 @@ def create_diagram(save_path, fmt="png"):
     # ── Arrow (edge-to-edge, consistent shrink) ───────────────────────
     def arrow(x1, y1, x2, y2, label=None, color=EDGE_COL,
               lw=1.0, dashed=False, lbl_off=(0, 0), lbl_fs=6.5,
-              cs="arc3,rad=0", shrinkA=SHRINK_PTS, shrinkB=SHRINK_PTS):
+              cs="arc3,rad=0", shrinkA=SHRINK_A, shrinkB=SHRINK_B):
         """Arrow from (x1,y1) to (x2,y2) — coordinates should be exactly
         on the shape edge.  shrinkA/shrinkB add a tiny visual offset in
         points so the arrow-tip doesn't overlap the shape border."""
@@ -196,7 +200,7 @@ def create_diagram(save_path, fmt="png"):
     arrow(dec["l"], dec["cy"],
           dec["l"] - 0.8, dec["cy"],
           color="#bbbbbb", dashed=True,
-          shrinkA=SHRINK_PTS, shrinkB=0)
+          shrinkA=SHRINK_A, shrinkB=0)
     ax.text(dec["l"] - 1.6, dec["cy"], "NO --> Skip tile",
             ha="center", va="center", fontsize=6.5,
             color="#999999", fontstyle="italic")
