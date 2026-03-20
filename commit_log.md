@@ -27,3 +27,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 17:47:04
 - **Change:** docs: document 80% overlap requirement for stitching
 
+### Commit 6 / 150
+- **Time:** 2026-03-20 17:48:05
+- **Change:** refactor: parameterize tile size (512x512)
+
