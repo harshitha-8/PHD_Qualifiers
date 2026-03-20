@@ -243,3 +243,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 18:43:57
 - **Change:** feat: generate 300 DPI PNG output
 
+### Commit 60 / 150
+- **Time:** 2026-03-20 18:44:58
+- **Change:** feat: add PDF vector output for LaTeX inclusion
+
