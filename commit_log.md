@@ -23,3 +23,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 17:46:03
 - **Change:** feat: add GSD resolution annotation to UAV node
 
+### Commit 5 / 150
+- **Time:** 2026-03-20 17:47:04
+- **Change:** docs: document 80% overlap requirement for stitching
+
