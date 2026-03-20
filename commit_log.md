@@ -183,3 +183,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 18:26:56
 - **Change:** feat: document spray schedule output format
 
+### Commit 45 / 150
+- **Time:** 2026-03-20 18:29:41
+- **Change:** docs: add yield estimate calculation method
+
