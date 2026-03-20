@@ -71,3 +71,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 17:58:16
 - **Change:** refactor: extract decision threshold as constant
 
+### Commit 17 / 150
+- **Time:** 2026-03-20 17:59:18
+- **Change:** docs: document N>=10-15 bloom threshold selection
+
