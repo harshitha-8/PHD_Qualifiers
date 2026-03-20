@@ -43,3 +43,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 17:51:09
 - **Change:** feat: add DBSCAN epsilon calculation note
 
+### Commit 10 / 150
+- **Time:** 2026-03-20 17:52:10
+- **Change:** docs: document MinPts=8 clustering parameter
+
