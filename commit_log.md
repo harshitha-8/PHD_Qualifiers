@@ -235,3 +235,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 18:41:55
 - **Change:** style: add proper gaps around arrow endpoints
 
+### Commit 58 / 150
+- **Time:** 2026-03-20 18:42:56
+- **Change:** docs: add figure caption with pipeline summary
+
