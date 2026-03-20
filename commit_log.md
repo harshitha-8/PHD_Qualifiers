@@ -187,3 +187,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 18:29:41
 - **Change:** docs: add yield estimate calculation method
 
+### Commit 46 / 150
+- **Time:** 2026-03-20 18:30:42
+- **Change:** docs: describe 7-dim evaluation metric space
+
