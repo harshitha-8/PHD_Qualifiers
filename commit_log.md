@@ -271,3 +271,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 18:54:08
 - **Change:** refactor: extract draw_diamond helper for reuse
 
+### Commit 67 / 150
+- **Time:** 2026-03-20 18:55:09
+- **Change:** refactor: extract draw_arrow helper for reuse
+
