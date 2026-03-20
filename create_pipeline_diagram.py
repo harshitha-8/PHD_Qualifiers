@@ -36,7 +36,7 @@ LABEL_COL   = "#666666"
 # shrinkA pulls the tail back from the source edge; shrinkB pulls the head
 # back from the target edge so the tip touches the border without penetrating.
 SHRINK_A = 0   # tail starts at the source edge
-SHRINK_B = 5   # tip of arrowhead lands exactly at the target edge
+SHRINK_B = 3   # tip of arrowhead lands at or just outside the target edge
 
 
 def create_diagram(save_path, fmt="png"):
