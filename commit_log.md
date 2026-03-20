@@ -147,3 +147,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 18:17:45
 - **Change:** feat: add Gemma3 latency benchmark (8882ms)
 
+### Commit 36 / 150
+- **Time:** 2026-03-20 18:18:46
+- **Change:** docs: document 3.3GB memory profile for Gemma3
+
