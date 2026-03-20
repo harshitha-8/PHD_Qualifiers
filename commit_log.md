@@ -151,3 +151,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 18:18:46
 - **Change:** docs: document 3.3GB memory profile for Gemma3
 
+### Commit 37 / 150
+- **Time:** 2026-03-20 18:19:48
+- **Change:** docs: describe edge deployment scenario
+
