@@ -89,7 +89,7 @@ def create_diagram(save_path, fmt="png"):
 
     # ── Arrow (edge-to-edge, consistent shrink) ───────────────────────
     def arrow(x1, y1, x2, y2, label=None, color=EDGE_COL,
-              lw=1.0, dashed=False, lbl_off=(0, 0), lbl_fs=6.5,
+              lw=1.4, dashed=False, lbl_off=(0, 0), lbl_fs=6.5,
               cs="arc3,rad=0", shrinkA=SHRINK_A, shrinkB=SHRINK_B):
         """Arrow from (x1,y1) to (x2,y2) — coordinates should be exactly
         on the shape edge.  shrinkA/shrinkB add a tiny visual offset in
@@ -98,7 +98,7 @@ def create_diagram(save_path, fmt="png"):
             (x1, y1), (x2, y2),
             arrowstyle="-|>", color=color, linewidth=lw,
             linestyle="--" if dashed else "-",
-            connectionstyle=cs, mutation_scale=10,
+            connectionstyle=cs, mutation_scale=13,
             zorder=2, shrinkA=shrinkA, shrinkB=shrinkB)
         ax.add_patch(a)
         if label:
@@ -160,9 +160,10 @@ def create_diagram(save_path, fmt="png"):
         boxes.append(b)
 
     # Horizontal arrows: exact right-edge --> left-edge (edge-to-edge)
+    # Extra-visible linewidth for the short horizontal gaps
     for i in range(4):
         arrow(boxes[i]["r"], cv_y,
-              boxes[i + 1]["l"], cv_y)
+              boxes[i + 1]["l"], cv_y, lw=1.6)
 
     # ==================================================================
     #  BLOOM DETECTION
