@@ -175,3 +175,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 18:24:54
 - **Change:** refactor: reorganize evaluation metrics section
 
+### Commit 43 / 150
+- **Time:** 2026-03-20 18:25:55
+- **Change:** docs: add harvest timing metric description
+
