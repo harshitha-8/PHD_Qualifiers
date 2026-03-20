@@ -139,3 +139,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 18:15:43
 - **Change:** docs: describe real-time advisory use case
 
+### Commit 34 / 150
+- **Time:** 2026-03-20 18:16:44
+- **Change:** docs: document Gemma3 model selection rationale
+
