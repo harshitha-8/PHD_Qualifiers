@@ -1,26 +1,20 @@
 """
 CV → LLM Pipeline Architecture Diagram
-NeurIPS-style figure (single-column, publication quality)
-Excludes TACC infrastructure from the left-hand side.
+NeurIPS-style figure — Tahoma font, consistent arrows, clean layout.
+Excludes TACC infrastructure.
 """
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
-import numpy as np
 import os
 
-# ─── NeurIPS style setup ───────────────────────────────────────────────
+# ─── Style setup ───────────────────────────────────────────────────────
 plt.rcParams.update({
-    "font.family":      "serif",
-    "font.serif":       ["Times New Roman", "Times", "DejaVu Serif"],
+    "font.family":      "sans-serif",
+    "font.sans-serif":  ["Tahoma", "DejaVu Sans", "Arial"],
     "font.size":        8,
-    "axes.titlesize":   9,
-    "axes.labelsize":   8,
-    "xtick.labelsize":  7,
-    "ytick.labelsize":  7,
     "text.usetex":      False,
     "figure.dpi":       300,
     "savefig.dpi":      300,
@@ -28,14 +22,14 @@ plt.rcParams.update({
     "savefig.pad_inches": 0.05,
 })
 
-# ─── Colour palette ────────────────────────────────────────────────────
-COL_CV      = "#4C72B0"    # muted blue
-COL_DECIDE  = "#E07B39"    # warm orange
-COL_PROMPT  = "#55A868"    # sage green
-COL_OLLAMA  = "#8172B2"    # soft purple
-COL_MODEL   = "#C44E52"    # muted red
-COL_OUTPUT  = "#937860"    # warm brown
-COL_LLAMA   = "#DA8BC3"    # mauve pink (highlighted model)
+# ─── Colour palette (kept as-is per user preference) ──────────────────
+COL_CV      = "#4C72B0"
+COL_DECIDE  = "#E07B39"
+COL_PROMPT  = "#55A868"
+COL_OLLAMA  = "#8172B2"
+COL_MODEL   = "#C44E52"
+COL_OUTPUT  = "#937860"
+COL_LLAMA   = "#DA8BC3"
 EDGE_COL    = "#444444"
 BG_COL      = "#FFFFFF"
 LABEL_COL   = "#666666"
@@ -87,15 +81,17 @@ def create_diagram(save_path, fmt="png"):
         ax.text(x, y, label, ha="center", va="center", fontsize=fontsize,
                 fontweight="bold", color="#1a1a1a", zorder=4)
 
-    # ─── Helper: arrow ────────────────────────────────────────────────
+    # ─── Helper: arrow (consistent style throughout) ──────────────────
     def draw_arrow(x1, y1, x2, y2, label=None, color=EDGE_COL,
-                   lw=0.9, ls="-", label_offset=(0, 0.12),
-                   label_fontsize=6, connectionstyle="arc3,rad=0"):
+                   lw=1.0, ls="-", label_offset=(0, 0.12),
+                   label_fontsize=6, connectionstyle="arc3,rad=0",
+                   dashed=False):
+        linestyle = "--" if dashed else ls
         arr = FancyArrowPatch(
             (x1, y1), (x2, y2),
             arrowstyle="-|>", color=color, linewidth=lw,
-            linestyle=ls, connectionstyle=connectionstyle,
-            mutation_scale=8, zorder=2)
+            linestyle=linestyle, connectionstyle=connectionstyle,
+            mutation_scale=10, zorder=2)
         ax.add_patch(arr)
         if label:
             mx = (x1 + x2) / 2 + label_offset[0]
@@ -109,126 +105,116 @@ def create_diagram(save_path, fmt="png"):
     # ═══════════════════════════════════════════════════════════════════
     # TITLE
     # ═══════════════════════════════════════════════════════════════════
-    ax.text(5.0, 11.7, r"CV $\rightarrow$ LLM Pipeline Architecture",
-            ha="center", va="center", fontsize=12, fontweight="bold",
-            color="#1a1a1a", math_fontfamily="cm")
-    ax.text(5.0, 11.35,
+    ax.text(5.0, 11.65, "CV  -->  LLM Pipeline Architecture",
+            ha="center", va="center", fontsize=13, fontweight="bold",
+            color="#1a1a1a")
+    ax.text(5.0, 11.30,
             "From UAV Orthomosaics to On-Device Agricultural Advisory",
             ha="center", va="center", fontsize=7.5, color=LABEL_COL,
             fontstyle="italic")
 
     # ═══════════════════════════════════════════════════════════════════
-    # ① COMPUTER VISION PIPELINE
+    # (1) COMPUTER VISION PIPELINE
     # ═══════════════════════════════════════════════════════════════════
     ax.text(0.3, 10.75, "(1) Computer Vision Pipeline",
-            ha="left", va="center", fontsize=8, fontweight="bold",
+            ha="left", va="center", fontsize=8.5, fontweight="bold",
             color=COL_CV, fontstyle="italic")
-    ax.plot([0.3, 9.7], [10.55, 10.55],
-            color=COL_CV, linewidth=0.5, alpha=0.4)
 
     cv_y = 10.0
+    # Wider spacing: positions 0.7, 2.55, 4.4, 6.25, 8.1
+    cv_positions = [0.9, 2.7, 4.5, 6.3, 8.1]
+    box_w = 1.45
     cv_nodes = [
         ("UAV\nOrthomosaic",
-         "100 m alt · 2.5 cm GSD\n80% overlap",              1.2),
+         "100 m alt, 2.5 cm GSD\n80% overlap"),
         ("RGB\nPreprocessing",
-         "decode to float32\nResize 512x512 tiles\n64 px overlap", 3.0),
+         "Resize 512x512 tiles\n64 px overlap"),
         ("HSV\nTransform",
-         "H in [330-360] u [0-20]\nS>0.4, V>0.3",            4.8),
+         "H in [330-360] u [0-20]\nS>0.4, V>0.3"),
         ("DBSCAN\nClustering",
-         "eps=16 px (~37.5 cm)\nMinPts=8",                    6.6),
+         "eps=16 px (~37.5 cm)\nMinPts=8"),
         ("Morphological\nRefinement",
-         "5x5 elliptical kernel\nArea in [200-8000] px",       8.4),
+         "5x5 elliptical kernel\nArea in [200-8000] px"),
     ]
 
-    for label, sub, cx in cv_nodes:
-        draw_box(cx, cv_y, 1.55, 0.95, label, sub, color=COL_CV,
-                 fontsize=7, sublabel_size=5.5)
+    for i, (label, sub) in enumerate(cv_nodes):
+        draw_box(cv_positions[i], cv_y, box_w, 0.95, label, sub,
+                 color=COL_CV, fontsize=7, sublabel_size=5.5)
 
-    # Arrows between CV nodes
-    edge_labels_cv = [
-        "decode to float32", "hue isolation",
-        "density clustering", "contour filter",
-    ]
+    # Arrows between CV nodes — with proper gap
     for i in range(len(cv_nodes) - 1):
-        x1 = cv_nodes[i][2] + 0.78
-        x2 = cv_nodes[i + 1][2] - 0.78
+        x1 = cv_positions[i] + box_w / 2 + 0.05
+        x2 = cv_positions[i + 1] - box_w / 2 - 0.05
         draw_arrow(x1, cv_y, x2, cv_y)
-        mx = (cv_nodes[i][2] + cv_nodes[i + 1][2]) / 2
-        ax.text(mx, cv_y + 0.58, edge_labels_cv[i],
-                ha="center", va="center", fontsize=5,
-                color=LABEL_COL, fontstyle="italic")
 
     # ─── Bloom Detection ──────────────────────────────────────────────
-    bloom_x, bloom_y = 5.0, 8.65
+    bloom_x, bloom_y = 5.0, 8.55
     draw_box(bloom_x, bloom_y, 1.8, 0.7, "Bloom Detection",
-             "N blooms · centroids\nspatial heatmap",
+             "N blooms, centroids\nspatial heatmap",
              color=COL_CV, fontsize=7.5, sublabel_size=5.5)
 
-    # Arrow from last CV node → Bloom Detection
-    draw_arrow(8.4, cv_y - 0.48, 8.4, 9.1)
-    draw_arrow(8.4, 9.1, bloom_x + 0.9, bloom_y + 0.05,
+    # Arrow from last CV node down and across to Bloom Detection
+    last_cv_x = cv_positions[-1]
+    draw_arrow(last_cv_x, cv_y - 0.48, last_cv_x, 9.05)
+    draw_arrow(last_cv_x, 9.05, bloom_x + 0.9, bloom_y + 0.1,
                connectionstyle="arc3,rad=-0.2",
-               label="structured output", label_offset=(0.7, 0.18))
+               label="structured output", label_offset=(0.6, 0.18))
 
     # ═══════════════════════════════════════════════════════════════════
-    # ② DECISION & PROMPT ENGINEERING
+    # (2) DECISION & PROMPT ENGINEERING
     # ═══════════════════════════════════════════════════════════════════
-    ax.text(0.3, 8.0, "(2) Decision & Prompt Engineering",
-            ha="left", va="center", fontsize=8, fontweight="bold",
+    ax.text(0.3, 7.95, "(2) Decision and Prompt Engineering",
+            ha="left", va="center", fontsize=8.5, fontweight="bold",
             color=COL_DECIDE, fontstyle="italic")
-    ax.plot([0.3, 9.7], [7.82, 7.82],
-            color=COL_DECIDE, linewidth=0.5, alpha=0.4)
 
-    dec_x, dec_y = 5.0, 7.30
+    dec_x, dec_y = 5.0, 7.25
     draw_diamond(dec_x, dec_y, 0.45, "N >= 10-15\nblooms?",
                  color=COL_DECIDE, fontsize=6)
 
     draw_arrow(bloom_x, bloom_y - 0.35, dec_x, dec_y + 0.45,
                label="bloom count", label_offset=(0.7, 0.0))
 
-    # NO branch
-    ax.text(dec_x - 1.7, dec_y, "NO  -->  Skip tile",
+    # NO branch (dashed)
+    ax.text(dec_x - 1.8, dec_y, "NO  -->  Skip tile",
             ha="center", va="center", fontsize=6.5,
             color="#999999", fontstyle="italic")
-    draw_arrow(dec_x - 1.3 * 0.45, dec_y, dec_x - 1.15, dec_y,
-               color="#bbbbbb", ls="--")
+    draw_arrow(dec_x - 1.3 * 0.45, dec_y, dec_x - 1.2, dec_y,
+               color="#bbbbbb", dashed=True)
 
     # YES branch
-    draw_arrow(dec_x, dec_y - 0.45, dec_x, 6.45,
+    draw_arrow(dec_x, dec_y - 0.45, dec_x, 6.4,
                label="YES --> template", label_offset=(0.85, 0.0))
 
     # Structured Prompt Engineering
-    prompt_x, prompt_y = 5.0, 6.1
+    prompt_x, prompt_y = 5.0, 6.05
     draw_box(prompt_x, prompt_y, 2.6, 0.65,
              "Structured Prompt Engineering",
-             "bloom count, density, heatmap\ngrowth stage -> advisory request",
+             "bloom count, density, heatmap\ngrowth stage --> advisory request",
              color=COL_PROMPT, fontsize=7.5, sublabel_size=5.5)
 
     # ═══════════════════════════════════════════════════════════════════
-    # ③ LLM INFERENCE
+    # (3) LLM INFERENCE
     # ═══════════════════════════════════════════════════════════════════
-    ax.text(0.3, 5.35, "(3) LLM Inference (Ollama)",
-            ha="left", va="center", fontsize=8, fontweight="bold",
+    ax.text(0.3, 5.30, "(3) LLM Inference (Ollama)",
+            ha="left", va="center", fontsize=8.5, fontweight="bold",
             color=COL_OLLAMA, fontstyle="italic")
-    ax.plot([0.3, 9.7], [5.17, 5.17],
-            color=COL_OLLAMA, linewidth=0.5, alpha=0.4)
 
-    ollama_x, ollama_y = 5.0, 4.7
+    ollama_x, ollama_y = 5.0, 4.65
     draw_box(ollama_x, ollama_y, 2.4, 0.65, "Ollama Server",
-             "127.0.0.1:11434 · local\nzero cloud · 90 s timeout · triple-retry",
+             "127.0.0.1:11434, local\nzero cloud, 90 s timeout, triple-retry",
              color=COL_OLLAMA, fontsize=7.5, sublabel_size=5.5)
 
     draw_arrow(prompt_x, prompt_y - 0.33, ollama_x, ollama_y + 0.33,
                label="structured prompt", label_offset=(1.0, 0.0))
 
     # Three LLM models
-    model_y = 3.4
+    model_y = 3.35
     models = [
-        ("Mistral 7B",  "1,127 ms · 4.4 GB\nReal-time advisory",
+        ("Mistral 7B",  "1,127 ms, 4.4 GB\nReal-time advisory",
          2.5, COL_MODEL, False),
-        ("Gemma3",       "8,882 ms · 3.3 GB\nEdge deployment",
+        ("Gemma3",       "8,882 ms, 3.3 GB\nEdge deployment",
          5.0, COL_MODEL, False),
-        ("Llama3.1 8B",  "1,294 ms · 4.9 GB\nBatch analytics",
+        ("Llama3.1 8B",  "1,294 ms, 4.9 GB\nBatch analytics",
          7.5, COL_LLAMA, True),
     ]
 
@@ -244,18 +230,16 @@ def create_diagram(save_path, fmt="png"):
             connectionstyle=f"arc3,rad={rad}")
 
     # ═══════════════════════════════════════════════════════════════════
-    # ④ ADVISORY OUTPUT
+    # (4) EVALUATION PIPELINE
     # ═══════════════════════════════════════════════════════════════════
-    ax.text(0.3, 2.55, "(4) Advisory Output",
-            ha="left", va="center", fontsize=8, fontweight="bold",
+    ax.text(0.3, 2.50, "(4) Evaluation Pipeline",
+            ha="left", va="center", fontsize=8.5, fontweight="bold",
             color=COL_OUTPUT, fontstyle="italic")
-    ax.plot([0.3, 9.7], [2.37, 2.37],
-            color=COL_OUTPUT, linewidth=0.5, alpha=0.4)
 
-    out_x, out_y = 5.0, 1.75
+    out_x, out_y = 5.0, 1.70
     draw_box(out_x, out_y, 3.6, 0.8,
-             "Advisory Output + Performance Metrics",
-             "harvest timing · spray schedule · yield estimate\n"
+             "Evaluation Output and Performance Metrics",
+             "harvest timing, spray schedule, yield estimate\n"
              "7-dim metrics (latency / memory / quality / throughput)",
              color=COL_OUTPUT, fontsize=7.5, sublabel_size=5.5)
 
@@ -267,7 +251,7 @@ def create_diagram(save_path, fmt="png"):
             connectionstyle=f"arc3,rad={rad}")
 
     # ─── Caption ──────────────────────────────────────────────────────
-    ax.text(5.0, 0.65,
+    ax.text(5.0, 0.60,
             "Fig. 1.  End-to-end CV to LLM pipeline: UAV orthomosaics are "
             "processed through classical computer-vision\nstages to detect "
             "cotton blooms, then structured prompts drive on-device LLM "
@@ -285,10 +269,8 @@ def create_diagram(save_path, fmt="png"):
 if __name__ == "__main__":
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # PNG (for README / quick preview)
     png_path = os.path.join(script_dir, "cv_llm_pipeline_architecture.png")
     create_diagram(png_path, fmt="png")
 
-    # PDF (for LaTeX / NeurIPS submission)
     pdf_path = os.path.join(script_dir, "cv_llm_pipeline_architecture.pdf")
     create_diagram(pdf_path, fmt="pdf")
