@@ -135,3 +135,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 18:14:42
 - **Change:** docs: document 4.4GB memory footprint for Mistral
 
+### Commit 33 / 150
+- **Time:** 2026-03-20 18:15:43
+- **Change:** docs: describe real-time advisory use case
+
