@@ -131,3 +131,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 18:13:35
 - **Change:** feat: add latency measurement (1127ms) for Mistral
 
+### Commit 32 / 150
+- **Time:** 2026-03-20 18:14:42
+- **Change:** docs: document 4.4GB memory footprint for Mistral
+
