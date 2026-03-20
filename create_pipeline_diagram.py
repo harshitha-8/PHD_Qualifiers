@@ -1,6 +1,6 @@
 """
 CV --> LLM Pipeline Architecture Diagram
-NeurIPS-style, Tahoma font, meticulous arrow and text placement.
+NeurIPS-style, Tahoma font, precise edge-to-edge arrows.
 """
 
 import matplotlib
@@ -31,8 +31,8 @@ EDGE_COL    = "#444444"
 BG_COL      = "#FFFFFF"
 LABEL_COL   = "#666666"
 
-# Arrow gap: how far the arrow tip stays from the box edge
-GAP = 0.06
+# Consistent arrowhead separation from shape edges (in points, not data coords)
+SHRINK_PTS = 2  # small visual clearance so arrowhead doesn't overlap border
 
 
 def create_diagram(save_path, fmt="png"):
@@ -83,16 +83,19 @@ def create_diagram(save_path, fmt="png"):
         return dict(cx=x, cy=y, t=y + sy, b=y - sy,
                     l=x - sx, r=x + sx)
 
-    # ── Arrow ─────────────────────────────────────────────────────────
+    # ── Arrow (edge-to-edge, consistent shrink) ───────────────────────
     def arrow(x1, y1, x2, y2, label=None, color=EDGE_COL,
               lw=1.0, dashed=False, lbl_off=(0, 0), lbl_fs=6.5,
-              cs="arc3,rad=0"):
+              cs="arc3,rad=0", shrinkA=SHRINK_PTS, shrinkB=SHRINK_PTS):
+        """Arrow from (x1,y1) to (x2,y2) — coordinates should be exactly
+        on the shape edge.  shrinkA/shrinkB add a tiny visual offset in
+        points so the arrow-tip doesn't overlap the shape border."""
         a = FancyArrowPatch(
             (x1, y1), (x2, y2),
             arrowstyle="-|>", color=color, linewidth=lw,
             linestyle="--" if dashed else "-",
             connectionstyle=cs, mutation_scale=10,
-            zorder=2, shrinkA=0, shrinkB=0)
+            zorder=2, shrinkA=shrinkA, shrinkB=shrinkB)
         ax.add_patch(a)
         if label:
             mx = (x1 + x2) / 2 + lbl_off[0]
@@ -102,6 +105,17 @@ def create_diagram(save_path, fmt="png"):
                     fontstyle="italic", zorder=6,
                     bbox=dict(facecolor="white", edgecolor="none",
                               pad=1.2, alpha=0.95))
+
+    # ── Section grouping border ───────────────────────────────────────
+    def section_border(x, y, w, h, color):
+        """Light dotted border to visually group a pipeline section."""
+        p = FancyBboxPatch(
+            (x, y), w, h,
+            boxstyle="round,pad=0.15",
+            facecolor="none", edgecolor=color,
+            linewidth=0.6, linestyle=(0, (4, 4)),
+            alpha=0.35, zorder=1)
+        ax.add_patch(p)
 
     # ==================================================================
     #  TITLE
@@ -121,8 +135,9 @@ def create_diagram(save_path, fmt="png"):
             ha="left", va="center", fontsize=8.5, fontweight="bold",
             color=COL_CV, fontstyle="italic")
 
+    section_border(0.10, 8.70, 9.80, 3.30, COL_CV)
+
     cv_y = 11.05
-    # Positions with breathing room — 1.85 apart, box width 1.48
     positions = [1.0, 2.85, 4.70, 6.55, 8.40]
     bw, bh = 1.48, 1.02
 
@@ -140,10 +155,10 @@ def create_diagram(save_path, fmt="png"):
                 color=COL_CV, fontsize=7, sublabel_size=5.2)
         boxes.append(b)
 
-    # Arrows: right edge + gap --> left edge - gap
+    # Horizontal arrows: exact right-edge --> left-edge (edge-to-edge)
     for i in range(4):
-        arrow(boxes[i]["r"] + GAP, cv_y,
-              boxes[i + 1]["l"] - GAP, cv_y)
+        arrow(boxes[i]["r"], cv_y,
+              boxes[i + 1]["l"], cv_y)
 
     # ==================================================================
     #  BLOOM DETECTION
@@ -152,12 +167,12 @@ def create_diagram(save_path, fmt="png"):
              "N blooms, centroids\nspatial heatmap",
              color=COL_CV, fontsize=7.5, sublabel_size=5.3)
 
-    # Single clean arrow from Morphological Refinement bottom to Bloom top-right
-    # Using a single curved arrow
-    arrow(boxes[4]["cx"], boxes[4]["b"] - GAP,
-          bl["r"] - 0.15, bl["t"] + GAP,
-          cs="arc3,rad=-0.25",
-          label="structured output", lbl_off=(-0.05, 0.0))
+    # Morphological Refinement bottom-edge --> Bloom Detection top-edge
+    # Arrow starts at the bottom-center of box[4], ends at the top-center of Bloom
+    arrow(boxes[4]["cx"], boxes[4]["b"],
+          bl["cx"], bl["t"],
+          cs="arc3,rad=-0.35",
+          label="structured output", lbl_off=(1.2, 0.15))
 
     # ==================================================================
     #  (2) DECISION & PROMPT
@@ -166,32 +181,35 @@ def create_diagram(save_path, fmt="png"):
             ha="left", va="center", fontsize=8.5, fontweight="bold",
             color=COL_DECIDE, fontstyle="italic")
 
+    section_border(0.10, 5.78, 9.80, 2.95, COL_DECIDE)
+
     dec = diamond(5.0, 7.85, 0.75, 0.55,
                   "N >= 10-15\nblooms?",
                   color=COL_DECIDE, fontsize=6.5)
 
-    # Bloom bottom --> diamond top
-    arrow(bl["cx"], bl["b"] - GAP,
-          dec["cx"], dec["t"] + GAP,
+    # Bloom Detection bottom-edge --> diamond top-vertex (edge-to-edge)
+    arrow(bl["cx"], bl["b"],
+          dec["cx"], dec["t"],
           label="bloom count", lbl_off=(0.75, 0.0))
 
-    # NO branch
-    arrow(dec["l"] - GAP, dec["cy"],
+    # NO branch — diamond left-vertex --> outward
+    arrow(dec["l"], dec["cy"],
           dec["l"] - 0.8, dec["cy"],
-          color="#bbbbbb", dashed=True)
+          color="#bbbbbb", dashed=True,
+          shrinkA=SHRINK_PTS, shrinkB=0)
     ax.text(dec["l"] - 1.6, dec["cy"], "NO --> Skip tile",
             ha="center", va="center", fontsize=6.5,
             color="#999999", fontstyle="italic")
 
-    # YES --> Structured Prompt Engineering
+    # YES --> Structured Prompt Engineering (diamond bottom-vertex --> box top-edge)
     pr = box(5.0, 6.30, 2.9, 0.78,
              "Structured Prompt Engineering",
              "bloom count, density, heatmap\n"
              "growth stage --> advisory request",
              color=COL_PROMPT, fontsize=7.5, sublabel_size=5.3)
 
-    arrow(dec["cx"], dec["b"] - GAP,
-          pr["cx"], pr["t"] + GAP,
+    arrow(dec["cx"], dec["b"],
+          pr["cx"], pr["t"],
           label="YES --> template", lbl_off=(0.9, 0.0))
 
     # ==================================================================
@@ -201,13 +219,16 @@ def create_diagram(save_path, fmt="png"):
             ha="left", va="center", fontsize=8.5, fontweight="bold",
             color=COL_OLLAMA, fontstyle="italic")
 
+    section_border(0.10, 2.80, 9.80, 2.93, COL_OLLAMA)
+
     ol = box(5.0, 4.85, 2.7, 0.78, "Ollama Server",
              "127.0.0.1:11434, local\n"
              "zero cloud, 90 s timeout, triple-retry",
              color=COL_OLLAMA, fontsize=7.5, sublabel_size=5.3)
 
-    arrow(pr["cx"], pr["b"] - GAP,
-          ol["cx"], ol["t"] + GAP,
+    # Structured Prompt bottom-edge --> Ollama top-edge (edge-to-edge)
+    arrow(pr["cx"], pr["b"],
+          ol["cx"], ol["t"],
           label="structured prompt", lbl_off=(1.0, 0.0))
 
     # Models
@@ -227,13 +248,14 @@ def create_diagram(save_path, fmt="png"):
                 fontsize=7.5, sublabel_size=5.3, highlight=hl)
         ml.append(m)
 
-    # Ollama --> each model
+    # Ollama bottom-edge --> each model top-edge (edge-to-edge)
     for m in ml:
         dx = m["cx"] - ol["cx"]
         rad = -0.22 if dx < -0.5 else (0.22 if dx > 0.5 else 0.0)
+        # Start at a spread point along the bottom edge of Ollama
         start_x = ol["cx"] + dx * 0.35
-        arrow(start_x, ol["b"] - GAP,
-              m["cx"], m["t"] + GAP,
+        arrow(start_x, ol["b"],
+              m["cx"], m["t"],
               cs=f"arc3,rad={rad}")
 
     # ==================================================================
@@ -243,17 +265,20 @@ def create_diagram(save_path, fmt="png"):
             ha="left", va="center", fontsize=8.5, fontweight="bold",
             color=COL_OUTPUT, fontstyle="italic")
 
+    section_border(0.10, 1.10, 9.80, 1.65, COL_OUTPUT)
+
     ev = box(5.0, 1.75, 3.9, 0.90,
              "Evaluation Output and Performance Metrics",
              "harvest timing, spray schedule, yield estimate\n"
              "7-dim metrics (latency / memory / quality / throughput)",
              color=COL_OUTPUT, fontsize=7.5, sublabel_size=5.3)
 
+    # Models bottom-edge --> Evaluation top-edge (edge-to-edge)
     for m in ml:
         dx = m["cx"] - ev["cx"]
         rad = -0.18 if dx < -0.5 else (0.18 if dx > 0.5 else 0.0)
-        arrow(m["cx"], m["b"] - GAP,
-              ev["cx"] + dx * 0.25, ev["t"] + GAP,
+        arrow(m["cx"], m["b"],
+              ev["cx"] + dx * 0.25, ev["t"],
               cs=f"arc3,rad={rad}")
 
     # Caption
