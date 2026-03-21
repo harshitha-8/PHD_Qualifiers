@@ -178,7 +178,7 @@ def create_diagram(save_path, fmt="png"):
     arrow(b1_2["r"], b1_2["cy"], b1_2["r"], read_y, arrow_style="-")
     arrow(b1_2["r"], read_y, b3_2["l"], read_y, arrow_style="-")
     arrow(b3_2["l"], read_y, b3_2["l"], b3_2["cy"])
-    add_text(b1_2["r"] + 0.25, read_y + 0.2, "read images", fontsize=6, color=LABEL_COL, style="italic", ha="left")
+    add_text(b1_2["r"] + 0.2, read_y - 0.4, "read images", fontsize=6, color=LABEL_COL, style="italic", ha="left")
     
     # LLM Trigger Logic - highlighted with Orange
     b3_4 = box(cols[2], y3_start - y3_gap*3, bw_col3, bh_col3, "LLM Trigger Logic",
@@ -228,10 +228,11 @@ def create_diagram(save_path, fmt="png"):
     arrow(b2_1["r"], reserve_y, b4_1["l"], reserve_y, arrow_style="-")
     arrow(b4_1["l"], reserve_y, b4_1["l"], b4_1["cy"], label="reserve node", lbl_off=(0.45, 0.15))
     
-    # Prompt Builder -> Ollama Server (clean horizontal handoff)
+    # Prompt Builder -> Ollama Server (clean orthogonal handoff)
     prompt_mid_x = (b3_5["r"] + b4_2["l"]) / 2
     arrow(b3_5["r"], b3_5["cy"], prompt_mid_x, b3_5["cy"], arrow_style="-")
-    arrow(prompt_mid_x, b3_5["cy"], b4_2["l"], b4_2["cy"], label="prompt ->", lbl_off=(0, 0.2))
+    arrow(prompt_mid_x, b3_5["cy"], prompt_mid_x, b4_2["cy"], arrow_style="-")
+    arrow(prompt_mid_x, b4_2["cy"], b4_2["l"], b4_2["cy"], label="prompt ->", lbl_off=(0, 0.2))
     
     # Worker Allocation -> HPCRoseDetector (assign workers)
     arrow(b2_3["r"], b2_3["cy"], b3_1["l"], b3_1["cy"]-0.3, label="assign workers", lbl_off=(0.0, 0.2))
