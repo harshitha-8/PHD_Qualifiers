@@ -178,7 +178,7 @@ def create_diagram(save_path, fmt="png"):
     arrow(b1_2["r"], b1_2["cy"], b1_2["r"], read_y, arrow_style="-")
     arrow(b1_2["r"], read_y, b3_2["l"], read_y, arrow_style="-")
     arrow(b3_2["l"], read_y, b3_2["l"], b3_2["cy"])
-    add_text(b1_2["r"] + 0.2, read_y - 0.4, "read images", fontsize=6, color=LABEL_COL, style="italic", ha="left")
+    add_text(b3_2["l"] - 0.2, read_y - 0.1, "read images", fontsize=6, color=LABEL_COL, style="italic", ha="right")
     
     # LLM Trigger Logic - highlighted with Orange
     b3_4 = box(cols[2], y3_start - y3_gap*3, bw_col3, bh_col3, "LLM Trigger Logic",
