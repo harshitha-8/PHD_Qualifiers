@@ -351,3 +351,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:14:32
 - **Change:** docs: add YES branch template description
 
+### Commit 87 / 150
+- **Time:** 2026-03-20 19:15:33
+- **Change:** refactor: centralize arrow mutation scale
+
