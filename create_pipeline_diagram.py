@@ -116,8 +116,8 @@ def create_diagram(save_path, fmt="png"):
             (x, y), w, h,
             boxstyle="round,pad=0.15",
             facecolor="none", edgecolor=color,
-            linewidth=0.6, linestyle="-",
-            alpha=0.35, zorder=1)
+            linewidth=0.8, linestyle="-",
+            alpha=0.45, zorder=1)
         ax.add_patch(p)
 
     # ==================================================================
@@ -134,7 +134,7 @@ def create_diagram(save_path, fmt="png"):
     # ==================================================================
     #  (1) CV PIPELINE
     # ==================================================================
-    ax.text(0.25, 11.75, "(1) Computer Vision Pipeline",
+    ax.text(0.25, 11.88, "(1) Computer Vision Pipeline",
             ha="left", va="center", fontsize=8.5, fontweight="bold",
             color=COL_CV, fontstyle="italic")
 
@@ -175,8 +175,8 @@ def create_diagram(save_path, fmt="png"):
     # Keep edge-to-edge geometry and arrow style consistent with the CV pipeline
     arrow(boxes[4]["cx"], boxes[4]["b"],
           bl["cx"], bl["t"],
-          cs="arc3,rad=-0.10",
-          label="structured output", lbl_off=(0.0, 0.30), mutation=10)
+          cs="arc3,rad=-0.12",
+          label="structured output", lbl_off=(0.0, 0.42), mutation=10)
 
     # ==================================================================
     #  (2) DECISION & PROMPT
@@ -194,7 +194,7 @@ def create_diagram(save_path, fmt="png"):
     # Bloom Detection bottom-edge --> diamond top-vertex (edge-to-edge)
     arrow(bl["cx"], bl["b"],
           dec["cx"], dec["t"],
-          label="bloom count", lbl_off=(0.75, 0.0))
+          label="bloom count", lbl_off=(0.85, 0.0))
 
     # NO branch — diamond left-vertex --> outward (solid arrow)
     arrow(dec["l"], dec["cy"],
@@ -233,7 +233,7 @@ def create_diagram(save_path, fmt="png"):
     # Structured Prompt bottom-edge --> Ollama top-edge (edge-to-edge)
     arrow(pr["cx"], pr["b"],
           ol["cx"], ol["t"],
-          label="structured prompt", lbl_off=(1.0, 0.0))
+          label="structured prompt", lbl_off=(1.1, 0.0))
 
     # Models
     my_ = 3.45
@@ -260,7 +260,7 @@ def create_diagram(save_path, fmt="png"):
         start_x = ol["cx"] + dx * 0.35
         arrow(start_x, ol["b"],
               m["cx"], m["t"],
-              cs=f"arc3,rad={rad}")
+              cs=f"arc3,rad={rad}", mutation=10)
 
     # ==================================================================
     #  (4) EVALUATION PIPELINE
