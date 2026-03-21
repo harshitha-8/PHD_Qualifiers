@@ -118,15 +118,15 @@ def create_diagram(save_path, fmt="png"):
     ]
     
     for x, title in zip(cols, headings):
-        add_text(x, 9.5, title, fontsize=7.5, weight="bold", color="#888888")
+        add_text(x, 9.6, title, fontsize=7.5, weight="bold", color="#888888")
 
     # ==================================================================
     #  COLUMN 1: INPUT DATA
     # ==================================================================
     bw_col1 = 2.4
     bh_col1 = 0.8
-    y1_start = 8.0
-    y1_gap = 2.0
+    y1_start = 8.4
+    y1_gap = 1.6
 
     b1_1 = box(cols[0], y1_start, bw_col1, bh_col1, "UAV Seasonal Dataset",
                "3,000+ orthomosaics", "300-acre nursery · 2.5cm GSD", color=COL_INPUT)
@@ -144,8 +144,9 @@ def create_diagram(save_path, fmt="png"):
     # ==================================================================
     bw_col2 = 2.6
     bh_col2 = 0.8
-    y2_start = 9.4
-    y2_gap = 1.0
+    # Align SLURM Job Script with HPCRoseDetector.run()
+    y2_start = 8.4
+    y2_gap = 1.6
 
     b2_1 = box(cols[1], y2_start, bw_col2, bh_col2, "SLURM Job Script",
                "#SBATCH --partition=gpu", "#SBATCH --nodes=1-4 --gres=gpu:h100", color=COL_SLURM)
@@ -154,11 +155,12 @@ def create_diagram(save_path, fmt="png"):
     b2_3 = box(cols[1], y2_start - y2_gap*2, bw_col2, bh_col2, "Worker Allocation",
                "1 - 4 parallel workers", "Optimal: 1.75 workers", color=COL_SLURM)
 
-    # Python venv is activated by the SLURM job script
-    env_x = b1_3["r"] + 0.6
-    arrow(b1_3["r"], b1_3["cy"], env_x, b1_3["cy"], arrow_style="-")
-    arrow(env_x, b1_3["cy"], env_x, b2_1["cy"], arrow_style="-")
-    arrow(env_x, b2_1["cy"], b2_1["l"], b2_1["cy"], label="loaded by job", lbl_off=(-0.3, 0.35))
+    # Python venv is activated by the SLURM job script (horizontal, clear origin)
+    arrow(b1_3["r"], b1_3["cy"], b2_1["l"], b1_3["cy"])
+    ax.text((b1_3["r"] + b2_1["l"]) / 2, b1_3["cy"] + 0.25, "loaded by job",
+            ha="center", va="center", fontsize=6, color=LABEL_COL,
+            fontstyle="italic", zorder=6,
+            bbox=dict(facecolor="white", edgecolor="none", pad=0.3, alpha=0.95))
 
     arrow(b2_1["cx"], b2_1["b"], b2_2["cx"], b2_2["t"], label="submit", lbl_off=(0.4, 0))
     arrow(b2_2["cx"], b2_2["b"], b2_3["cx"], b2_3["t"], label="dispatch", lbl_off=(0.4, 0))
@@ -170,8 +172,8 @@ def create_diagram(save_path, fmt="png"):
     bw_col3 = 3.2
     bh_col3 = 0.8
     # Even vertical spacing in HPCRoseDetector column
-    y3_gap = 1.4
-    y3_start = 7.4
+    y3_gap = 1.2
+    y3_start = 8.0
 
     b3_1 = box(cols[2], y3_start, bw_col3, bh_col3, "HPCRoseDetector.run()",
                "Orchestrator class · Python 3.9.18", "CUDA-accelerated · batch_size=16", color=COL_HPC)
@@ -180,10 +182,10 @@ def create_diagram(save_path, fmt="png"):
     b3_3 = box(cols[2], y3_start - y3_gap*2, bw_col3, bh_col3, "CV Detection Engine",
                "HSV -> DBSCAN -> Morphology", "Bloom count N per tile", color=COL_HPC)
 
-    # Shared File System -> Image Tile Generator (clean horizontal at same y)
-    arrow(b1_2["r"], b1_2["cy"], b3_2["l"], b3_2["cy"])
-    ax.text((b1_2["r"] + b3_2["l"]) / 2, b3_2["cy"] + 0.35, "read images",
-            ha="center", va="center", fontsize=6, color=LABEL_COL,
+    # Shared File System -> Image Tile Generator (clean horizontal at tile generator height)
+    arrow(b1_2["r"], b3_2["cy"], b3_2["l"], b3_2["cy"])
+    ax.text(b3_2["l"] + 0.25, b3_2["t"] + 0.25, "read images",
+            ha="left", va="center", fontsize=6, color=LABEL_COL,
             fontstyle="italic", zorder=6,
             bbox=dict(facecolor="white", edgecolor="none", pad=0.4, alpha=0.95))
     
@@ -194,9 +196,9 @@ def create_diagram(save_path, fmt="png"):
     b3_5 = box(cols[2], y3_start - y3_gap*4, bw_col3, bh_col3, "Prompt Builder",
                "Bloom count · density · heatmap", "-> structured advisory request", color=COL_HPC)
 
-    # Connections from Slurm (enter at top of HPCRoseDetector.run())
-    arrow(b2_1["r"], b2_1["cy"], b3_1["cx"], b3_1["t"], color=COL_SLURM, lw=2.6)
-    ax.text(b3_1["cx"], b3_1["t"] + 0.32, "orchestrate",
+    # Connections from Slurm (horizontal into HPCRoseDetector.run())
+    arrow(b2_1["r"], b3_1["t"], b3_1["l"], b3_1["t"], color=COL_SLURM, lw=2.6)
+    ax.text((b2_1["r"] + b3_1["l"]) / 2, b3_1["t"] + 0.25, "orchestrate",
             ha="center", va="center", fontsize=6.2, color=COL_SLURM,
             fontstyle="italic", fontweight="bold", zorder=6,
             bbox=dict(facecolor="white", edgecolor="none", pad=0.3, alpha=0.95))
@@ -206,12 +208,13 @@ def create_diagram(save_path, fmt="png"):
     arrow(b3_2["cx"], b3_2["b"], b3_3["cx"], b3_3["t"], label="detect", lbl_off=(0.3, 0))
     arrow(b3_3["cx"], b3_3["b"], b3_4["cx"], b3_4["t"], label="N count", lbl_off=(0.4, 0))
     arrow(b3_4["cx"], b3_4["b"], b3_5["cx"], b3_5["t"], label="YES branch", lbl_off=(0.4, 0))
-    # NO branch from LLM Trigger Logic -> next tile
-    no_x = b3_4["l"] - 0.9
+    # NO branch from LLM Trigger Logic -> termination (tile discarded)
+    no_x = b3_4["l"] - 0.35
     arrow(b3_4["l"], b3_4["cy"], no_x, b3_4["cy"], dashed=True, arrow_style="-")
-    arrow(no_x, b3_4["cy"], no_x, b3_2["cy"], dashed=True, arrow_style="-")
-    arrow(no_x, b3_2["cy"], b3_2["l"], b3_2["cy"], dashed=True)
-    ax.text(b3_4["l"] - 0.15, b3_4["cy"] - 0.55, "NO -> next tile",
+    # termination bar
+    ax.plot([no_x - 0.1, no_x - 0.1], [b3_4["cy"] - 0.12, b3_4["cy"] + 0.12],
+            color=EDGE_COL, linewidth=1.2, linestyle="--", zorder=2)
+    ax.text(no_x - 0.15, b3_4["cy"] - 0.25, "NO: tile discarded",
             ha="right", va="center", fontsize=6, color=LABEL_COL,
             fontstyle="italic", zorder=6,
             bbox=dict(facecolor="white", edgecolor="none", pad=0.3, alpha=0.95))
@@ -222,21 +225,21 @@ def create_diagram(save_path, fmt="png"):
     # ==================================================================
     bw_col4 = 2.4
     bh_col4 = 0.8
-    y4_start = 8.8
+    y4_start = 8.6
     
     b4_1 = box(cols[3], y4_start, bw_col4, bh_col4, "H100 GPU Node",
                "80GB HBM3 · 3.35 TB/s", "CUDA 12.x · NVLink", color=COL_SLURM)  # Matches reference red
                
-    b4_2 = box(cols[3], y4_start - 2.0, bw_col4, bh_col4, "Ollama Server",
+    b4_2 = box(cols[3], y4_start - 1.4, bw_col4, bh_col4, "Ollama Server",
                "127.0.0.1:11434", "90s timeout · triple-retry", color=COL_HPC) # Matches pipeline Ollama color
                
-    b4_3 = box(cols[3], y4_start - 3.4, bw_col4, bh_col4, "Mistral 7B",
+    b4_3 = box(cols[3], y4_start - 2.8, bw_col4, bh_col4, "Mistral 7B",
                "1,127ms · 4.4GB", None, color=COL_INPUT)
                
-    b4_4 = box(cols[3], y4_start - 4.8, bw_col4, bh_col4, "Gemma3",
+    b4_4 = box(cols[3], y4_start - 4.2, bw_col4, bh_col4, "Gemma3",
                "8,882ms · 3.3GB", None, color=COL_METRICS)
                
-    b4_5 = box(cols[3], y4_start - 6.2, bw_col4, bh_col4, "Llama3.1 8B",
+    b4_5 = box(cols[3], y4_start - 5.6, bw_col4, bh_col4, "Llama3.1 8B",
                "1,294ms · 4.9GB", None, color=COL_GPU) # Orange
 
     # Connections into and within Column 4
@@ -258,9 +261,12 @@ def create_diagram(save_path, fmt="png"):
     arrow(prompt_mid_x, b3_5["cy"], prompt_mid_x, b4_2["cy"], arrow_style="-")
     arrow(prompt_mid_x, b4_2["cy"], b4_2["l"], b4_2["cy"], label="prompt ->", lbl_off=(0, 0.2))
     
-    # Worker Allocation -> HPCRoseDetector (assign workers)
-    arrow(b2_3["r"], b2_3["cy"], b3_1["l"], b3_1["cy"])
-    ax.text((b2_3["r"] + b3_1["l"]) / 2, b3_1["cy"] + 0.25, "assign workers",
+    # Worker Allocation -> HPCRoseDetector (assign workers) with horizontal entry
+    assign_x = b2_3["r"] + 0.6
+    arrow(b2_3["r"], b2_3["cy"], assign_x, b2_3["cy"], arrow_style="-")
+    arrow(assign_x, b2_3["cy"], assign_x, b3_1["cy"], arrow_style="-")
+    arrow(assign_x, b3_1["cy"], b3_1["l"], b3_1["cy"])
+    ax.text((assign_x + b3_1["l"]) / 2, b3_1["cy"] + 0.25, "assign workers",
             ha="center", va="center", fontsize=6, color=LABEL_COL,
             fontstyle="italic", zorder=6,
             bbox=dict(facecolor="white", edgecolor="none", pad=0.3, alpha=0.95))
@@ -272,17 +278,18 @@ def create_diagram(save_path, fmt="png"):
     bw_col5 = 2.6
     bh_col5 = 0.8
 
-    b5_1 = box(cols[4], b4_1["cy"], bw_col5, bh_col5, "Model Output Dirs",
+    # Evenly distribute output boxes across the LLM vertical span
+    out_gap = (b4_3["cy"] - b4_5["cy"]) / 3
+    b5_1 = box(cols[4], b4_3["cy"], bw_col5, bh_col5, "Model Output Dirs",
                "/mistral/ /gemma3/ /llama3/", "bbox · heatmap · report", color=COL_METRICS)
                
-    b5_2 = box(cols[4], b4_2["cy"], bw_col5, bh_col5, "7-Dim Metrics CSV",
+    b5_2 = box(cols[4], b4_3["cy"] - out_gap, bw_col5, bh_col5, "7-Dim Metrics CSV",
                "latency · memory · quality", "throughput · efficiency · success", color=COL_METRICS)
                
-    mid_llm = (b4_3["cy"] + b4_5["cy"]) / 2
-    b5_3 = box(cols[4], mid_llm + 0.6, bw_col5, bh_col5, "Scaling Analysis",
+    b5_3 = box(cols[4], b4_3["cy"] - 2*out_gap, bw_col5, bh_col5, "Scaling Analysis",
                "Strong: peak 1.75 workers", "Weak: linear throughput", color=COL_METRICS)
                
-    b5_4 = box(cols[4], mid_llm - 0.6, bw_col5, bh_col5, "Advisory Reports",
+    b5_4 = box(cols[4], b4_3["cy"] - 3*out_gap, bw_col5, bh_col5, "Advisory Reports",
                "harvest · spray · yield estimate", "per-nursery recommendations", color=COL_METRICS)
 
     # Connections to column 5
@@ -308,11 +315,10 @@ def create_diagram(save_path, fmt="png"):
     
     # Scaling results inform worker allocation (feedback loop)
     # Routing an arrow backwards from Scaling Analysis (b5_3) to Worker Allocation (b2_3)
-    w1_x, w1_y = b4_2["cx"], 0.7
+    w1_x, w1_y = b5_3["cx"], 0.7
     w2_x, w2_y = b2_3["cx"], 0.7
-    # Segment 1 (left, then down) – avoid right-edge rectangle
-    arrow(b5_3["cx"], b5_3["b"], w1_x, b5_3["b"], dashed=True, shrinkA=SHRINK_A, shrinkB=0, arrow_style="-")
-    arrow(w1_x, b5_3["b"], w1_x, w1_y, dashed=True, shrinkA=0, shrinkB=0, arrow_style="-")
+    # Segment 1 (down)
+    arrow(b5_3["cx"], b5_3["b"], w1_x, w1_y, dashed=True, shrinkA=SHRINK_A, shrinkB=0, arrow_style="-")
     # Segment 2 (left)
     arrow(w1_x, w1_y, w2_x, w2_y, dashed=True,
           shrinkA=0, shrinkB=0, arrow_style="-|>")
