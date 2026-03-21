@@ -21,12 +21,12 @@ plt.rcParams.update({
     "savefig.pad_inches": 0.05,
 })
 
-# Refined Academic Color Palette based on the dark mode reference but adapted for print
-COL_INPUT   = "#4C72B0"  # Blue
-COL_SLURM   = "#C44E52"  # Red/Salmon
-COL_HPC     = "#8172B2"  # Purple
-COL_GPU     = "#DD8452"  # Orange/Brown for workers, plus mix
-COL_METRICS = "#55A868"  # Green
+# Palette aligned to CV -> LLM pipeline for consistent coordination
+COL_INPUT   = "#4C72B0"  # Matches COL_CV
+COL_SLURM   = "#C44E52"  # Matches COL_MODEL
+COL_HPC     = "#8172B2"  # Matches COL_OLLAMA
+COL_GPU     = "#E07B39"  # Matches COL_DECIDE
+COL_METRICS = "#55A868"  # Matches COL_PROMPT
 EDGE_COL    = "#444444"
 BG_COL      = "#FFFFFF"
 LABEL_COL   = "#555555"
@@ -176,7 +176,7 @@ def create_diagram(save_path, fmt="png"):
     
     # LLM Trigger Logic - highlighted with Orange
     b3_4 = box(cols[2], y3_start - y3_gap*3, bw_col3, bh_col3, "LLM Trigger Logic",
-               "IF N >= 10-15: invoke Ollama", "ELSE: skip tile (save compute)", color="#E07B39", alpha=0.15)
+               "IF N >= 10-15: invoke Ollama", "ELSE: skip tile (save compute)", color=COL_GPU, alpha=0.15)
                
     b3_5 = box(cols[2], y3_start - y3_gap*4, bw_col3, bh_col3, "Prompt Builder",
                "Bloom count · density · heatmap", "-> structured advisory request", color=COL_HPC)
@@ -187,7 +187,7 @@ def create_diagram(save_path, fmt="png"):
     # Vertical sequence
     arrow(b3_1["cx"], b3_1["b"], b3_2["cx"], b3_2["t"], label="tiles", lbl_off=(0.3, 0), color=COL_HPC)
     arrow(b3_2["cx"], b3_2["b"], b3_3["cx"], b3_3["t"], label="detect", lbl_off=(0.3, 0), color=COL_HPC)
-    arrow(b3_3["cx"], b3_3["b"], b3_4["cx"], b3_4["t"], label="N count", lbl_off=(0.4, 0), color="#E07B39")
+    arrow(b3_3["cx"], b3_3["b"], b3_4["cx"], b3_4["t"], label="N count", lbl_off=(0.4, 0), color=COL_GPU)
     arrow(b3_4["cx"], b3_4["b"], b3_5["cx"], b3_5["t"], label="YES branch", lbl_off=(0.4, 0), color=COL_HPC)
 
 
@@ -202,7 +202,7 @@ def create_diagram(save_path, fmt="png"):
                "80GB HBM3 · 3.35 TB/s", "CUDA 12.x · NVLink", color=COL_SLURM)  # Matches reference red
                
     b4_2 = box(cols[3], y4_start - 2.0, bw_col4, bh_col4, "Ollama Server",
-               "127.0.0.1:11434", "90s timeout · triple-retry", color=COL_INPUT) # Matches ref blue
+               "127.0.0.1:11434", "90s timeout · triple-retry", color=COL_HPC) # Matches pipeline Ollama color
                
     b4_3 = box(cols[3], y4_start - 3.2, bw_col4, bh_col4, "Mistral 7B",
                "1,127ms · 4.4GB", None, color=COL_INPUT)

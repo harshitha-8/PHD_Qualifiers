@@ -160,10 +160,10 @@ def create_diagram(save_path, fmt="png"):
         boxes.append(b)
 
     # Horizontal arrows: exact right-edge --> left-edge (edge-to-edge)
-    # Extra-visible linewidth for the short horizontal gaps
+    # Keep line weight consistent with other arrows
     for i in range(4):
         arrow(boxes[i]["r"], cv_y,
-              boxes[i + 1]["l"], cv_y, lw=1.6)
+              boxes[i + 1]["l"], cv_y, lw=1.4)
 
     # ==================================================================
     #  BLOOM DETECTION
@@ -173,11 +173,11 @@ def create_diagram(save_path, fmt="png"):
              color=COL_CV, fontsize=7.5, sublabel_size=5.3)
 
     # Morphological Refinement bottom-edge --> Bloom Detection top-edge
-    # Start from left-of-center bottom edge of box[4] for a cleaner downward arc
-    arrow(boxes[4]["l"] + 0.25, boxes[4]["b"],
-          bl["r"], bl["cy"],
-          cs="arc3,rad=-0.30",
-          label="structured output", lbl_off=(0.15, 0.35))
+    # Keep edge-to-edge geometry and arrow style consistent with the CV pipeline
+    arrow(boxes[4]["cx"], boxes[4]["b"],
+          bl["cx"], bl["t"],
+          cs="arc3,rad=-0.12",
+          label="structured output", lbl_off=(0.0, 0.30))
 
     # ==================================================================
     #  (2) DECISION & PROMPT

@@ -363,3 +363,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:17:35
 - **Change:** docs: add prompt content field descriptions
 
+### Commit 90 / 150
+- **Time:** 2026-03-20 19:18:39
+- **Change:** refactor: organize LLM model definitions
+
