@@ -174,9 +174,12 @@ def create_diagram(save_path, fmt="png"):
     b3_3 = box(cols[2], y3_start - y3_gap*2, bw_col3, bh_col3, "CV Detection Engine",
                "HSV -> DBSCAN -> Morphology", "Bloom count N per tile", color=COL_HPC)
 
-    # Shared File System -> Image Tile Generator (route above SLURM box)
-    arrow(b1_2["r"], b1_2["cy"], b3_2["l"], b3_2["cy"],
-          label="read images", lbl_off=(0.3, 0.45), color=COL_INPUT, cs="arc3,rad=0.25")
+    # Shared File System -> Image Tile Generator (route above SLURM boxes)
+    read_y  = 7.4
+    arrow(b1_2["r"], b1_2["cy"], b1_2["r"], read_y, color=COL_INPUT, arrow_style="-")
+    arrow(b1_2["r"], read_y, b3_2["l"], read_y, color=COL_INPUT, arrow_style="-")
+    arrow(b3_2["l"], read_y, b3_2["l"], b3_2["cy"], color=COL_INPUT)
+    add_text((b1_2["r"] + b3_2["l"]) / 2, read_y + 0.18, "read images", fontsize=6, color=LABEL_COL, style="italic")
     
     # LLM Trigger Logic - highlighted with Orange
     b3_4 = box(cols[2], y3_start - y3_gap*3, bw_col3, bh_col3, "LLM Trigger Logic",
@@ -221,12 +224,10 @@ def create_diagram(save_path, fmt="png"):
     arrow(b4_1["cx"], b4_1["b"], b4_2["cx"], b4_2["t"], label="CUDA", lbl_off=(0.3, 0), color=COL_SLURM)
     arrow(b4_2["cx"], b4_2["b"], b4_3["cx"], b4_3["t"], label="sequential dispatch", lbl_off=(0.7, 0), color=COL_INPUT)
     # SLURM reserves hardware nodes (route above HPCRoseDetector box)
-    reserve_mid_x = (b2_1["r"] + b4_1["l"]) / 2
-    reserve_mid_y = b2_1["cy"] + 0.85
-    arrow(b2_1["r"], b2_1["cy"], reserve_mid_x, reserve_mid_y,
-          color=COL_SLURM, arrow_style="-")
-    arrow(reserve_mid_x, reserve_mid_y, b4_1["l"], b4_1["cy"],
-          label="reserve node", lbl_off=(0.2, 0.15), color=COL_SLURM)
+    reserve_y = b3_1["t"] + 0.35
+    arrow(b2_1["r"], b2_1["cy"], b2_1["r"], reserve_y, color=COL_SLURM, arrow_style="-")
+    arrow(b2_1["r"], reserve_y, b4_1["l"], reserve_y, color=COL_SLURM, arrow_style="-")
+    arrow(b4_1["l"], reserve_y, b4_1["l"], b4_1["cy"], color=COL_SLURM, label="reserve node", lbl_off=(0.45, 0.15))
     
     # Prompt Builders to Models (fan out representation like the reference)
     # The reference shows arrows coming from Prompt Builder -> the models
