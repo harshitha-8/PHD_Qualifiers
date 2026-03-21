@@ -112,13 +112,8 @@ def create_diagram(save_path, fmt="png"):
     # ── Section grouping border ───────────────────────────────────────
     def section_border(x, y, w, h, color):
         """Light dotted border to visually group a pipeline section."""
-        p = FancyBboxPatch(
-            (x, y), w, h,
-            boxstyle="round,pad=0.15",
-            facecolor="none", edgecolor="#DADADA",
-            linewidth=0.8, linestyle="-",
-            alpha=0.75, zorder=1)
-        ax.add_patch(p)
+        # Borders removed per design request
+        return
 
     # ==================================================================
     #  TITLE
@@ -174,9 +169,14 @@ def create_diagram(save_path, fmt="png"):
     # Morphological Refinement bottom-edge --> Bloom Detection top-edge
     # Keep edge-to-edge geometry and arrow style consistent with the CV pipeline
     arrow(boxes[4]["cx"], boxes[4]["b"],
-          bl["cx"], bl["t"] + 0.04,
+          bl["cx"], bl["t"] + 0.16,
           cs="arc3,rad=-0.12",
-          label="structured output", lbl_off=(0.0, 0.42), mutation=10)
+          mutation=10)
+    ax.text(6.35, 10.15, "structured output",
+            ha="center", va="center", fontsize=6.5,
+            color=LABEL_COL, fontstyle="italic",
+            bbox=dict(facecolor="white", edgecolor="none",
+                      pad=0.6, alpha=0.95), zorder=6)
 
     # ==================================================================
     #  (2) DECISION & PROMPT
@@ -259,7 +259,7 @@ def create_diagram(save_path, fmt="png"):
         # Start at a spread point along the bottom edge of Ollama
         start_x = ol["cx"] + dx * 0.35
         arrow(start_x, ol["b"],
-              m["cx"], m["t"] + 0.04,
+              m["cx"], m["t"] + 0.18,
               cs=f"arc3,rad={rad}", mutation=10)
 
     # ==================================================================
