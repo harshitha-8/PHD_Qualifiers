@@ -32,11 +32,9 @@ BG_COL      = "#FFFFFF"
 LABEL_COL   = "#666666"
 
 # Consistent arrowhead separation from shape edges (in points, not data coords)
-# For -|> arrowstyle with mutation_scale=10, the head is ~5 pts long.
-# shrinkA pulls the tail back from the source edge; shrinkB pulls the head
-# back from the target edge so the tip touches the border without penetrating.
+# Keep tips on the box edge (no penetration inside).
 SHRINK_A = 0   # tail starts at the source edge
-SHRINK_B = 3   # tip of arrowhead lands at or just outside the target edge
+SHRINK_B = 0   # tip lands exactly at the target edge
 
 
 def create_diagram(save_path, fmt="png"):
@@ -90,7 +88,8 @@ def create_diagram(save_path, fmt="png"):
     # ── Arrow (edge-to-edge, consistent shrink) ───────────────────────
     def arrow(x1, y1, x2, y2, label=None, color=EDGE_COL,
               lw=1.4, dashed=False, lbl_off=(0, 0), lbl_fs=6.5,
-              cs="arc3,rad=0", shrinkA=SHRINK_A, shrinkB=SHRINK_B):
+              cs="arc3,rad=0", shrinkA=SHRINK_A, shrinkB=SHRINK_B,
+              mutation=11):
         """Arrow from (x1,y1) to (x2,y2) — coordinates should be exactly
         on the shape edge.  shrinkA/shrinkB add a tiny visual offset in
         points so the arrow-tip doesn't overlap the shape border."""
@@ -98,7 +97,7 @@ def create_diagram(save_path, fmt="png"):
             (x1, y1), (x2, y2),
             arrowstyle="-|>", color=color, linewidth=lw,
             linestyle="--" if dashed else "-",
-            connectionstyle=cs, mutation_scale=13,
+            connectionstyle=cs, mutation_scale=mutation,
             zorder=2, shrinkA=shrinkA, shrinkB=shrinkB)
         ax.add_patch(a)
         if label:
@@ -117,7 +116,7 @@ def create_diagram(save_path, fmt="png"):
             (x, y), w, h,
             boxstyle="round,pad=0.15",
             facecolor="none", edgecolor=color,
-            linewidth=0.6, linestyle=(0, (4, 4)),
+            linewidth=0.6, linestyle="-",
             alpha=0.35, zorder=1)
         ax.add_patch(p)
 
@@ -142,7 +141,7 @@ def create_diagram(save_path, fmt="png"):
     section_border(0.10, 8.78, 9.80, 3.22, COL_CV)
 
     cv_y = 11.05
-    positions = [1.0, 2.85, 4.70, 6.55, 8.40]
+    positions = [0.90, 2.90, 4.90, 6.90, 8.90]
     bw, bh = 1.48, 1.02
 
     data = [
@@ -160,10 +159,10 @@ def create_diagram(save_path, fmt="png"):
         boxes.append(b)
 
     # Horizontal arrows: exact right-edge --> left-edge (edge-to-edge)
-    # Keep line weight consistent with other arrows
+    # Ensure visible shafts between boxes
     for i in range(4):
         arrow(boxes[i]["r"], cv_y,
-              boxes[i + 1]["l"], cv_y, lw=1.4)
+              boxes[i + 1]["l"], cv_y, lw=1.4, mutation=10)
 
     # ==================================================================
     #  BLOOM DETECTION
@@ -176,8 +175,8 @@ def create_diagram(save_path, fmt="png"):
     # Keep edge-to-edge geometry and arrow style consistent with the CV pipeline
     arrow(boxes[4]["cx"], boxes[4]["b"],
           bl["cx"], bl["t"],
-          cs="arc3,rad=-0.12",
-          label="structured output", lbl_off=(0.0, 0.30))
+          cs="arc3,rad=-0.10",
+          label="structured output", lbl_off=(0.0, 0.30), mutation=10)
 
     # ==================================================================
     #  (2) DECISION & PROMPT
@@ -197,10 +196,10 @@ def create_diagram(save_path, fmt="png"):
           dec["cx"], dec["t"],
           label="bloom count", lbl_off=(0.75, 0.0))
 
-    # NO branch — diamond left-vertex --> outward
+    # NO branch — diamond left-vertex --> outward (solid arrow)
     arrow(dec["l"], dec["cy"],
           dec["l"] - 0.8, dec["cy"],
-          color="#bbbbbb", dashed=True,
+          color="#bbbbbb", dashed=False,
           shrinkA=SHRINK_A, shrinkB=0)
     ax.text(dec["l"] - 1.6, dec["cy"], "NO --> Skip tile",
             ha="center", va="center", fontsize=6.5,
