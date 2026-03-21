@@ -603,3 +603,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 20:18:54
 - **Change:** style: adjust RGB preprocessing box dimensions
 
+### Commit 150 / 150
+- **Time:** 2026-03-20 20:19:55
+- **Change:** feat: add GSD resolution annotation to UAV node
+
