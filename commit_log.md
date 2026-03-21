@@ -303,3 +303,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:02:18
 - **Change:** docs: document save path resolution logic
 
+### Commit 75 / 150
+- **Time:** 2026-03-20 19:03:19
+- **Change:** feat: add dual-format output (PNG and PDF)
+
