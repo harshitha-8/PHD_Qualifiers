@@ -415,3 +415,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:30:54
 - **Change:** refactor: clean up connectionstyle strings
 
+### Commit 103 / 150
+- **Time:** 2026-03-20 19:31:55
+- **Change:** style: adjust caption line spacing
+
