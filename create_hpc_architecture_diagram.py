@@ -152,7 +152,11 @@ def create_diagram(save_path, fmt="png"):
     b2_3 = box(cols[1], y_start - y_gap*2, bw_col2, bh_col2, "Worker Allocation",
                "1 - 4 parallel workers", "Optimal: 1.75 workers", color=COL_SLURM)
 
-    arrow(b1_3["r"], b1_3["cy"], b2_3["l"], b2_3["cy"], label="activate", lbl_off=(0, 0.2))
+    # Python venv is activated by the SLURM job script
+    env_x = b1_3["r"] + 0.6
+    arrow(b1_3["r"], b1_3["cy"], env_x, b1_3["cy"], arrow_style="-")
+    arrow(env_x, b1_3["cy"], env_x, b2_1["cy"], arrow_style="-")
+    arrow(env_x, b2_1["cy"], b2_1["l"], b2_1["cy"], label="loaded by job", lbl_off=(0.0, 0.2))
 
     arrow(b2_1["cx"], b2_1["b"], b2_2["cx"], b2_2["t"], label="submit", lbl_off=(0.4, 0))
     arrow(b2_2["cx"], b2_2["b"], b2_3["cx"], b2_3["t"], label="dispatch", lbl_off=(0.4, 0))
@@ -173,12 +177,16 @@ def create_diagram(save_path, fmt="png"):
     b3_3 = box(cols[2], y3_start - y3_gap*2, bw_col3, bh_col3, "CV Detection Engine",
                "HSV -> DBSCAN -> Morphology", "Bloom count N per tile", color=COL_HPC)
 
-    # Shared File System -> Image Tile Generator (route above SLURM boxes)
-    read_y  = 8.6
-    arrow(b1_2["r"], b1_2["cy"], b1_2["r"], read_y, arrow_style="-")
-    arrow(b1_2["r"], read_y, b3_2["l"], read_y, arrow_style="-")
-    arrow(b3_2["l"], read_y, b3_2["l"], b3_2["cy"])
-    add_text((b1_2["r"] + b3_2["l"]) / 2, read_y + 0.15, "read images", fontsize=6, color=LABEL_COL, style="italic", ha="center")
+    # Shared File System -> Image Tile Generator (horizontal into Image Tile Generator)
+    read_x1 = b1_2["r"] + 0.4
+    read_y  = b2_3["t"] + 0.3
+    read_x2 = b3_2["l"] - 0.4
+    arrow(b1_2["r"], b1_2["cy"], read_x1, b1_2["cy"], arrow_style="-")
+    arrow(read_x1, b1_2["cy"], read_x1, read_y, arrow_style="-")
+    arrow(read_x1, read_y, read_x2, read_y, arrow_style="-")
+    arrow(read_x2, read_y, read_x2, b3_2["cy"], arrow_style="-")
+    arrow(read_x2, b3_2["cy"], b3_2["l"], b3_2["cy"])
+    add_text(b1_2["r"] + 0.2, b1_2["cy"] - 0.6, "read images", fontsize=6, color=LABEL_COL, style="italic", ha="left")
     
     # LLM Trigger Logic - highlighted with Orange
     b3_4 = box(cols[2], y3_start - y3_gap*3, bw_col3, bh_col3, "LLM Trigger Logic",
@@ -195,6 +203,9 @@ def create_diagram(save_path, fmt="png"):
     arrow(b3_2["cx"], b3_2["b"], b3_3["cx"], b3_3["t"], label="detect", lbl_off=(0.3, 0))
     arrow(b3_3["cx"], b3_3["b"], b3_4["cx"], b3_4["t"], label="N count", lbl_off=(0.4, 0))
     arrow(b3_4["cx"], b3_4["b"], b3_5["cx"], b3_5["t"], label="YES branch", lbl_off=(0.4, 0))
+    # NO branch from LLM Trigger Logic
+    arrow(b3_4["l"], b3_4["cy"], b3_4["l"] - 1.2, b3_4["cy"],
+          dashed=True, label="NO -> Skip tile", lbl_off=(-0.1, 0.2))
 
 
     # ==================================================================
@@ -235,7 +246,10 @@ def create_diagram(save_path, fmt="png"):
     arrow(prompt_mid_x, b4_2["cy"], b4_2["l"], b4_2["cy"], label="prompt ->", lbl_off=(0, 0.2))
     
     # Worker Allocation -> HPCRoseDetector (assign workers)
-    arrow(b2_3["r"], b2_3["cy"], b3_1["l"], b3_1["cy"]-0.3, label="assign workers", lbl_off=(0.0, 0.2))
+    assign_x = b2_3["r"] + 0.6
+    arrow(b2_3["r"], b2_3["cy"], assign_x, b2_3["cy"], arrow_style="-")
+    arrow(assign_x, b2_3["cy"], assign_x, b3_1["cy"], arrow_style="-")
+    arrow(assign_x, b3_1["cy"], b3_1["l"], b3_1["cy"], label="assign workers", lbl_off=(0.0, 0.2))
 
 
     # ==================================================================
