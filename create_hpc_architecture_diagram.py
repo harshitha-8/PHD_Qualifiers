@@ -33,7 +33,7 @@ LABEL_COL   = "#555555"
 
 # Arrow tuning for precise edge-to-edge
 SHRINK_A = 0
-SHRINK_B = 3  # For mutation_scale=12
+SHRINK_B = 0  # For mutation_scale=12 (tips land on box edges)
 
 
 def create_diagram(save_path, fmt="png"):
@@ -156,7 +156,7 @@ def create_diagram(save_path, fmt="png"):
     env_x = b1_3["r"] + 0.6
     arrow(b1_3["r"], b1_3["cy"], env_x, b1_3["cy"], arrow_style="-")
     arrow(env_x, b1_3["cy"], env_x, b2_1["cy"], arrow_style="-")
-    arrow(env_x, b2_1["cy"], b2_1["l"], b2_1["cy"], label="loaded by job", lbl_off=(0.0, 0.2))
+    arrow(env_x, b2_1["cy"], b2_1["l"], b2_1["cy"], label="loaded by job", lbl_off=(-0.3, 0.35))
 
     arrow(b2_1["cx"], b2_1["b"], b2_2["cx"], b2_2["t"], label="submit", lbl_off=(0.4, 0))
     arrow(b2_2["cx"], b2_2["b"], b2_3["cx"], b2_3["t"], label="dispatch", lbl_off=(0.4, 0))
@@ -167,8 +167,9 @@ def create_diagram(save_path, fmt="png"):
     # ==================================================================
     bw_col3 = 3.2
     bh_col3 = 0.8
-    y3_start = 8.2
-    y3_gap = 1.3
+    # Align Image Tile Generator with Shared File System (same y)
+    y3_gap = 1.25
+    y3_start = 6.4 + y3_gap
 
     b3_1 = box(cols[2], y3_start, bw_col3, bh_col3, "HPCRoseDetector.run()",
                "Orchestrator class · Python 3.9.18", "CUDA-accelerated · batch_size=16", color=COL_HPC)
@@ -177,16 +178,12 @@ def create_diagram(save_path, fmt="png"):
     b3_3 = box(cols[2], y3_start - y3_gap*2, bw_col3, bh_col3, "CV Detection Engine",
                "HSV -> DBSCAN -> Morphology", "Bloom count N per tile", color=COL_HPC)
 
-    # Shared File System -> Image Tile Generator (horizontal into Image Tile Generator)
-    read_x1 = b1_2["r"] + 0.4
-    read_y  = b2_3["t"] + 0.3
-    read_x2 = b3_2["l"] - 0.4
-    arrow(b1_2["r"], b1_2["cy"], read_x1, b1_2["cy"], arrow_style="-")
-    arrow(read_x1, b1_2["cy"], read_x1, read_y, arrow_style="-")
-    arrow(read_x1, read_y, read_x2, read_y, arrow_style="-")
-    arrow(read_x2, read_y, read_x2, b3_2["cy"], arrow_style="-")
-    arrow(read_x2, b3_2["cy"], b3_2["l"], b3_2["cy"])
-    add_text(b1_2["r"] + 0.2, b1_2["cy"] - 0.6, "read images", fontsize=6, color=LABEL_COL, style="italic", ha="left")
+    # Shared File System -> Image Tile Generator (clean horizontal at same y)
+    arrow(b1_2["r"], b1_2["cy"], b3_2["l"], b3_2["cy"])
+    ax.text(b3_2["l"] + 0.2, b3_2["t"] + 0.25, "read images",
+            ha="left", va="center", fontsize=6, color=LABEL_COL,
+            fontstyle="italic", zorder=6,
+            bbox=dict(facecolor="white", edgecolor="none", pad=0.4, alpha=0.95))
     
     # LLM Trigger Logic - highlighted with Orange
     b3_4 = box(cols[2], y3_start - y3_gap*3, bw_col3, bh_col3, "LLM Trigger Logic",
@@ -195,17 +192,27 @@ def create_diagram(save_path, fmt="png"):
     b3_5 = box(cols[2], y3_start - y3_gap*4, bw_col3, bh_col3, "Prompt Builder",
                "Bloom count · density · heatmap", "-> structured advisory request", color=COL_HPC)
 
-    # Connections from Slurm
-    arrow(b2_1["r"], b2_1["cy"], b3_1["l"], b3_1["cy"]-0.2, label="orchestrate", lbl_off=(-0.1, 0.2))
+    # Connections from Slurm (enter at top of HPCRoseDetector.run())
+    arrow(b2_1["r"], b2_1["cy"], b3_1["cx"], b3_1["t"])
+    ax.text(b2_1["r"] + 0.35, b3_1["t"] + 0.22, "orchestrate",
+            ha="left", va="center", fontsize=6, color=LABEL_COL,
+            fontstyle="italic", zorder=6,
+            bbox=dict(facecolor="white", edgecolor="none", pad=0.3, alpha=0.95))
 
     # Vertical sequence
     arrow(b3_1["cx"], b3_1["b"], b3_2["cx"], b3_2["t"], label="tiles", lbl_off=(0.3, 0))
     arrow(b3_2["cx"], b3_2["b"], b3_3["cx"], b3_3["t"], label="detect", lbl_off=(0.3, 0))
     arrow(b3_3["cx"], b3_3["b"], b3_4["cx"], b3_4["t"], label="N count", lbl_off=(0.4, 0))
     arrow(b3_4["cx"], b3_4["b"], b3_5["cx"], b3_5["t"], label="YES branch", lbl_off=(0.4, 0))
-    # NO branch from LLM Trigger Logic
-    arrow(b3_4["l"], b3_4["cy"], b3_4["l"] - 1.2, b3_4["cy"],
-          dashed=True, label="NO -> Skip tile", lbl_off=(-0.1, 0.2))
+    # NO branch from LLM Trigger Logic -> next tile
+    no_x = b3_4["l"] - 0.9
+    arrow(b3_4["l"], b3_4["cy"], no_x, b3_4["cy"], dashed=True, arrow_style="-")
+    arrow(no_x, b3_4["cy"], no_x, b3_2["cy"], dashed=True, arrow_style="-")
+    arrow(no_x, b3_2["cy"], b3_2["l"], b3_2["cy"], dashed=True)
+    ax.text(b3_4["l"] - 0.15, b3_4["cy"] - 0.55, "NO -> next tile",
+            ha="right", va="center", fontsize=6, color=LABEL_COL,
+            fontstyle="italic", zorder=6,
+            bbox=dict(facecolor="white", edgecolor="none", pad=0.3, alpha=0.95))
 
 
     # ==================================================================
@@ -232,7 +239,11 @@ def create_diagram(save_path, fmt="png"):
 
     # Connections into and within Column 4
     arrow(b4_1["cx"], b4_1["b"], b4_2["cx"], b4_2["t"], label="CUDA", lbl_off=(0.3, 0))
-    arrow(b4_2["cx"], b4_2["b"], b4_3["cx"], b4_3["t"], label="sequential dispatch", lbl_off=(0.7, 0))
+    arrow(b4_2["cx"], b4_2["b"], b4_3["cx"], b4_3["t"])
+    ax.text(b4_2["cx"], (b4_2["b"] + b4_3["t"]) / 2 - 0.05, "sequential dispatch",
+            ha="center", va="center", fontsize=6, color=LABEL_COL,
+            fontstyle="italic", zorder=6,
+            bbox=dict(facecolor="white", edgecolor="none", pad=0.3, alpha=0.95))
     # SLURM reserves hardware nodes (route above HPCRoseDetector box)
     reserve_y = b3_1["t"] + 0.35
     arrow(b2_1["r"], b2_1["cy"], b2_1["r"], reserve_y, arrow_style="-")
@@ -246,10 +257,14 @@ def create_diagram(save_path, fmt="png"):
     arrow(prompt_mid_x, b4_2["cy"], b4_2["l"], b4_2["cy"], label="prompt ->", lbl_off=(0, 0.2))
     
     # Worker Allocation -> HPCRoseDetector (assign workers)
-    assign_x = b2_3["r"] + 0.6
+    assign_x = b3_1["l"] - 0.35
     arrow(b2_3["r"], b2_3["cy"], assign_x, b2_3["cy"], arrow_style="-")
     arrow(assign_x, b2_3["cy"], assign_x, b3_1["cy"], arrow_style="-")
-    arrow(assign_x, b3_1["cy"], b3_1["l"], b3_1["cy"], label="assign workers", lbl_off=(0.0, 0.2))
+    arrow(assign_x, b3_1["cy"], b3_1["l"], b3_1["cy"])
+    ax.text((b2_3["r"] + assign_x) / 2, b2_3["cy"] - 0.3, "assign workers",
+            ha="center", va="center", fontsize=6, color=LABEL_COL,
+            fontstyle="italic", zorder=6,
+            bbox=dict(facecolor="white", edgecolor="none", pad=0.3, alpha=0.95))
 
 
     # ==================================================================
@@ -295,7 +310,7 @@ def create_diagram(save_path, fmt="png"):
     # Routing an arrow backwards from Scaling Analysis (b5_3) to Worker Allocation (b2_3)
     w1_x, w1_y = b5_3["cx"], 0.7
     w2_x, w2_y = b2_3["cx"], 0.7
-    # Segment 1 (down)
+    # Segment 1 (down/left) – avoid right-edge rectangle
     arrow(b5_3["cx"], b5_3["b"], w1_x, w1_y, dashed=True, shrinkA=SHRINK_A, shrinkB=0, arrow_style="-")
     # Segment 2 (left)
     arrow(w1_x, w1_y, w2_x, w2_y, dashed=True,
