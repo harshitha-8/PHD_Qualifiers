@@ -299,3 +299,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:01:16
 - **Change:** refactor: clean up import statements
 
+### Commit 74 / 150
+- **Time:** 2026-03-20 19:02:18
+- **Change:** docs: document save path resolution logic
+
