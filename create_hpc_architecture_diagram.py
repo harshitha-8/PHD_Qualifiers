@@ -137,6 +137,9 @@ def create_diagram(save_path, fmt="png"):
 
     arrow(b1_1["cx"], b1_1["b"], b1_2["cx"], b1_2["t"], label="data path", lbl_off=(0.6, 0), color=COL_INPUT)
     arrow(b1_2["cx"], b1_2["b"], b1_3["cx"], b1_3["t"], label="env", lbl_off=(0.4, 0), color=COL_INPUT)
+    # Shared File System -> Image Tile Generator
+    arrow(b1_2["r"], b1_2["cy"], b3_2["l"], b3_2["cy"],
+          label="read images", lbl_off=(0, 0.2), color=COL_INPUT)
 
 
     # ==================================================================
@@ -215,7 +218,7 @@ def create_diagram(save_path, fmt="png"):
 
     # Connections into and within Column 4
     arrow(b4_1["cx"], b4_1["b"], b4_2["cx"], b4_2["t"], label="CUDA", lbl_off=(0.3, 0), color=COL_SLURM)
-    arrow(b4_2["cx"], b4_2["b"], b4_3["cx"], b4_3["t"], label="route", lbl_off=(0.3, 0), color=COL_INPUT)
+    arrow(b4_2["cx"], b4_2["b"], b4_3["cx"], b4_3["t"], label="sequential dispatch", lbl_off=(0.7, 0), color=COL_INPUT)
     
     # Prompt Builders to Models (fan out representation like the reference)
     # The reference shows arrows coming from Prompt Builder -> the models
@@ -246,13 +249,24 @@ def create_diagram(save_path, fmt="png"):
 
     # Connections to column 5
     arrow(b4_1["r"], b4_1["cy"], b5_1["l"], b5_1["cy"], label="write", lbl_off=(-0.3, 0.2), color=COL_METRICS)
-    arrow(b4_2["r"], b4_2["cy"], b5_2["l"], b5_2["cy"], label="log", lbl_off=(-0.3, 0.2), color=COL_METRICS)
+    # Metrics come from model inference outputs, not directly from Ollama
     
-    # Mistral just points out to the right (nothing in column 5 aligns to it)
-    arrow(b4_3["r"], b4_3["cy"], b4_3["r"]+1.2, b4_3["cy"], color=COL_INPUT)
-    # Gemma points to Scaling Analysis
+    # Model outputs and metrics routing
+    # All models -> Output Dirs
+    arrow(b4_3["r"], b4_3["cy"], b5_1["l"], b5_1["cy"], color=COL_METRICS)
+    arrow(b4_4["r"], b4_4["cy"], b5_1["l"], b5_1["cy"], color=COL_METRICS)
+    arrow(b4_5["r"], b4_5["cy"], b5_1["l"], b5_1["cy"], color=COL_METRICS)
+    # All models -> 7-Dim Metrics CSV
+    arrow(b4_3["r"], b4_3["cy"], b5_2["l"], b5_2["cy"], color=COL_METRICS)
+    arrow(b4_4["r"], b4_4["cy"], b5_2["l"], b5_2["cy"], color=COL_METRICS)
+    arrow(b4_5["r"], b4_5["cy"], b5_2["l"], b5_2["cy"], color=COL_METRICS)
+    # All models -> Scaling Analysis
+    arrow(b4_3["r"], b4_3["cy"], b5_3["l"], b5_3["cy"], color=COL_METRICS)
     arrow(b4_4["r"], b4_4["cy"], b5_3["l"], b5_3["cy"], color=COL_METRICS)
-    # Llama points to Advisory Reports
+    arrow(b4_5["r"], b4_5["cy"], b5_3["l"], b5_3["cy"], color=COL_METRICS)
+    # All models -> Advisory Reports
+    arrow(b4_3["r"], b4_3["cy"], b5_4["l"], b5_4["cy"], color=COL_GPU)
+    arrow(b4_4["r"], b4_4["cy"], b5_4["l"], b5_4["cy"], color=COL_GPU)
     arrow(b4_5["r"], b4_5["cy"], b5_4["l"], b5_4["cy"], color=COL_GPU)
     
     # Scaling results inform worker allocation (feedback loop)
@@ -262,7 +276,8 @@ def create_diagram(save_path, fmt="png"):
     # Segment 1 (down)
     arrow(b5_3["cx"], b5_3["b"], w1_x, w1_y, dashed=True, color="#888888", shrinkA=SHRINK_A, shrinkB=0, arrow_style="-")
     # Segment 2 (left)
-    arrow(w1_x, w1_y, w2_x, w2_y, dashed=True, color="#888888", shrinkA=0, shrinkB=0, arrow_style="-")
+    arrow(w1_x, w1_y, w2_x, w2_y, dashed=True, color="#888888",
+          shrinkA=0, shrinkB=0, arrow_style="-|>")
     # Add label on this horizontal segment
     add_text((w1_x + w2_x)/2, w1_y + 0.18, "scaling results inform worker allocation", fontsize=6, color=LABEL_COL, style="italic")
     # Segment 3 (up)
