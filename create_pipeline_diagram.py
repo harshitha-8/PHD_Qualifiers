@@ -70,8 +70,8 @@ def create_diagram(save_path, fmt="png"):
                     fontsize=sublabel_size, color=LABEL_COL, zorder=4,
                     fontstyle="italic")
         return dict(cx=x, cy=y, w=w, h=h,
-                    t=y + h / 2, b=y - h / 2,
-                    l=x - w / 2, r=x + w / 2)
+                    t=y + h / 2 + 0.12, b=y - h / 2 - 0.12,
+                    l=x - w / 2 - 0.12, r=x + w / 2 + 0.12)
 
     # ── Decision diamond ──────────────────────────────────────────────
     def diamond(x, y, sx, sy, label, color=COL_DECIDE, fontsize=6.5):
@@ -240,11 +240,11 @@ def create_diagram(save_path, fmt="png"):
     my_ = 3.45
     mdata = [
         ("Mistral 7B",  "1,127 ms, 4.4 GB\nReal-time advisory",
-         2.2, COL_MODEL, False),
+         2.2, COL_CV, False),
         ("Gemma3",       "8,882 ms, 3.3 GB\nEdge deployment",
-         5.0, COL_MODEL, False),
+         5.0, COL_PROMPT, False),
         ("Llama3.1 8B",  "1,294 ms, 4.9 GB\nBatch analytics",
-         7.8, COL_LLAMA, True),
+         7.8, COL_DECIDE, True),
     ]
 
     ml = []
