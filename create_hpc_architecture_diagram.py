@@ -88,13 +88,13 @@ def create_diagram(save_path, fmt="png"):
     # ── Arrow Helper ──────────────────────────────────────────────────
     def arrow(x1, y1, x2, y2, label=None, color=EDGE_COL, lw=1.2, dashed=False,
               lbl_off=(0, 0), lbl_fs=6, cs="arc3,rad=0", shrinkA=SHRINK_A, shrinkB=SHRINK_B,
-              arrow_style="-|>", mutation=12, label_color="#444444"):
+              arrow_style="-|>", mutation=12, label_color="#444444", alpha=1.0):
         a = FancyArrowPatch(
             (x1, y1), (x2, y2),
             arrowstyle=arrow_style, color=color, linewidth=lw,
             linestyle="--" if dashed else "-",
             connectionstyle=cs, mutation_scale=mutation,
-            zorder=2, shrinkA=shrinkA, shrinkB=shrinkB)
+            zorder=2, shrinkA=shrinkA, shrinkB=shrinkB, alpha=alpha)
         ax.add_patch(a)
         if label:
             mx = (x1 + x2) / 2 + lbl_off[0]

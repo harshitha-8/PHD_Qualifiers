@@ -291,3 +291,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 18:59:13
 - **Change:** style: set white background for print compatibility
 
+### Commit 72 / 150
+- **Time:** 2026-03-20 19:00:15
+- **Change:** docs: add font fallback chain documentation
+
