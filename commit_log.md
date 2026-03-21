@@ -491,3 +491,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:50:16
 - **Change:** docs: add tile preprocessing documentation
 
+### Commit 122 / 150
+- **Time:** 2026-03-20 19:51:17
+- **Change:** feat: document HSV color space conversion
+
