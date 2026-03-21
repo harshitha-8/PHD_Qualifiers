@@ -174,7 +174,7 @@ def create_diagram(save_path, fmt="png"):
     # Morphological Refinement bottom-edge --> Bloom Detection top-edge
     # Keep edge-to-edge geometry and arrow style consistent with the CV pipeline
     arrow(boxes[4]["cx"], boxes[4]["b"],
-          bl["cx"], bl["t"],
+          bl["cx"], bl["t"] + 0.04,
           cs="arc3,rad=-0.12",
           label="structured output", lbl_off=(0.0, 0.42), mutation=10)
 
@@ -259,7 +259,7 @@ def create_diagram(save_path, fmt="png"):
         # Start at a spread point along the bottom edge of Ollama
         start_x = ol["cx"] + dx * 0.35
         arrow(start_x, ol["b"],
-              m["cx"], m["t"],
+              m["cx"], m["t"] + 0.04,
               cs=f"arc3,rad={rad}", mutation=10)
 
     # ==================================================================
