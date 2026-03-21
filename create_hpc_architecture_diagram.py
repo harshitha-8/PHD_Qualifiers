@@ -220,6 +220,8 @@ def create_diagram(save_path, fmt="png"):
     # Connections into and within Column 4
     arrow(b4_1["cx"], b4_1["b"], b4_2["cx"], b4_2["t"], label="CUDA", lbl_off=(0.3, 0), color=COL_SLURM)
     arrow(b4_2["cx"], b4_2["b"], b4_3["cx"], b4_3["t"], label="sequential dispatch", lbl_off=(0.7, 0), color=COL_INPUT)
+    # SLURM reserves hardware nodes
+    arrow(b2_1["r"], b2_1["cy"], b4_1["l"], b4_1["cy"], label="reserve node", lbl_off=(0, 0.2), color=COL_SLURM)
     
     # Prompt Builders to Models (fan out representation like the reference)
     # The reference shows arrows coming from Prompt Builder -> the models
@@ -249,8 +251,7 @@ def create_diagram(save_path, fmt="png"):
                "harvest · spray · yield estimate", "per-nursery recommendations", color=COL_METRICS)
 
     # Connections to column 5
-    arrow(b4_1["r"], b4_1["cy"], b5_1["l"], b5_1["cy"], label="write", lbl_off=(-0.3, 0.2), color=COL_METRICS)
-    # Metrics come from model inference outputs, not directly from Ollama
+    # Metrics and outputs come from model inference outputs, not directly from Ollama or GPU hardware
     
     # Model outputs and metrics routing
     # All models -> Output Dirs
@@ -282,7 +283,7 @@ def create_diagram(save_path, fmt="png"):
     # Add label on this horizontal segment
     add_text((w1_x + w2_x)/2, w1_y + 0.18, "scaling results inform worker allocation", fontsize=6, color=LABEL_COL, style="italic")
     # Segment 3 (up)
-    arrow(w2_x, w2_y, b2_3["cx"], b2_3["b"], dashed=True, color="#888888", shrinkA=0, shrinkB=SHRINK_B)
+    arrow(w2_x, w2_y, b2_3["cx"], b2_3["b"], dashed=True, color="#888888", shrinkA=0, shrinkB=SHRINK_B, arrow_style="-")
 
 
     fig.savefig(save_path, facecolor=BG_COL, edgecolor="none", format=fmt)

@@ -527,3 +527,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:59:27
 - **Change:** style: final layout polish and alignment
 
+### Commit 131 / 150
+- **Time:** 2026-03-20 20:00:29
+- **Change:** docs: add spatial heatmap generation notes
+
