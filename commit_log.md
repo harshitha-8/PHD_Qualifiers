@@ -395,3 +395,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:25:48
 - **Change:** style: improve overall vertical spacing
 
+### Commit 98 / 150
+- **Time:** 2026-03-20 19:26:49
+- **Change:** docs: add pipeline flow direction indicators
+
