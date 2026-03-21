@@ -67,7 +67,7 @@ def create_diagram(save_path, fmt="png"):
             ax.text(x, y - 0.25, sublabel, ha="center", va="center",
                     fontsize=sublabel_size, color=LABEL_COL, zorder=4,
                     fontstyle="italic")
-        return dict(cx=x, cy=y, w=w, h=h,
+        return dict(cx=x, cy=y, w=w, h=h, patch=p,
                     t=y + h / 2 + 0.12, b=y - h / 2 - 0.12,
                     l=x - w / 2 - 0.12, r=x + w / 2 + 0.12)
 
@@ -89,7 +89,7 @@ def create_diagram(save_path, fmt="png"):
     def arrow(x1, y1, x2, y2, label=None, color=EDGE_COL,
               lw=1.4, dashed=False, lbl_off=(0, 0), lbl_fs=6.5,
               cs="arc3,rad=0", shrinkA=SHRINK_A, shrinkB=SHRINK_B,
-              mutation=11):
+              mutation=11, patchA=None, patchB=None):
         """Arrow from (x1,y1) to (x2,y2) — coordinates should be exactly
         on the shape edge.  shrinkA/shrinkB add a tiny visual offset in
         points so the arrow-tip doesn't overlap the shape border."""
@@ -98,7 +98,8 @@ def create_diagram(save_path, fmt="png"):
             arrowstyle="-|>", color=color, linewidth=lw,
             linestyle="--" if dashed else "-",
             connectionstyle=cs, mutation_scale=mutation,
-            zorder=2, shrinkA=shrinkA, shrinkB=shrinkB)
+            zorder=2, shrinkA=shrinkA, shrinkB=shrinkB,
+            patchA=patchA, patchB=patchB)
         ax.add_patch(a)
         if label:
             mx = (x1 + x2) / 2 + lbl_off[0]
@@ -169,9 +170,9 @@ def create_diagram(save_path, fmt="png"):
     # Morphological Refinement bottom-edge --> Bloom Detection top-edge
     # Keep edge-to-edge geometry and arrow style consistent with the CV pipeline
     arrow(boxes[4]["cx"], boxes[4]["b"],
-          bl["cx"], bl["t"] + 0.08,
+          bl["cx"], bl["t"],
           cs="arc3,rad=-0.12",
-          mutation=10, shrinkB=2)
+          mutation=9)
     ax.text(6.35, 10.15, "structured output",
             ha="center", va="center", fontsize=6.5,
             color=LABEL_COL, fontstyle="italic",
@@ -259,8 +260,8 @@ def create_diagram(save_path, fmt="png"):
         # Start at a spread point along the bottom edge of Ollama
         start_x = ol["cx"] + dx * 0.35
         arrow(start_x, ol["b"],
-              m["cx"], m["t"] + 0.08,
-              cs=f"arc3,rad={rad}", mutation=10, shrinkB=2)
+              m["cx"], m["t"],
+              cs=f"arc3,rad={rad}", mutation=9)
 
     # ==================================================================
     #  (4) EVALUATION PIPELINE
