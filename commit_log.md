@@ -475,3 +475,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:46:11
 - **Change:** feat: document on-device inference requirements
 
+### Commit 118 / 150
+- **Time:** 2026-03-20 19:47:13
+- **Change:** docs: add UAV flight parameter specifications
+
