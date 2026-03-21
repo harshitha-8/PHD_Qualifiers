@@ -137,9 +137,6 @@ def create_diagram(save_path, fmt="png"):
 
     arrow(b1_1["cx"], b1_1["b"], b1_2["cx"], b1_2["t"], label="data path", lbl_off=(0.6, 0), color=COL_INPUT)
     arrow(b1_2["cx"], b1_2["b"], b1_3["cx"], b1_3["t"], label="env", lbl_off=(0.4, 0), color=COL_INPUT)
-    # Shared File System -> Image Tile Generator
-    arrow(b1_2["r"], b1_2["cy"], b3_2["l"], b3_2["cy"],
-          label="read images", lbl_off=(0, 0.2), color=COL_INPUT)
 
 
     # ==================================================================
@@ -176,6 +173,10 @@ def create_diagram(save_path, fmt="png"):
                "512x512 patches · 64px overlap", "~100 tiles per orthomosaic", color=COL_HPC)
     b3_3 = box(cols[2], y3_start - y3_gap*2, bw_col3, bh_col3, "CV Detection Engine",
                "HSV -> DBSCAN -> Morphology", "Bloom count N per tile", color=COL_HPC)
+
+    # Shared File System -> Image Tile Generator
+    arrow(b1_2["r"], b1_2["cy"], b3_2["l"], b3_2["cy"],
+          label="read images", lbl_off=(0, 0.2), color=COL_INPUT)
     
     # LLM Trigger Logic - highlighted with Orange
     b3_4 = box(cols[2], y3_start - y3_gap*3, bw_col3, bh_col3, "LLM Trigger Logic",
