@@ -172,7 +172,7 @@ def create_diagram(save_path, fmt="png"):
     arrow(boxes[4]["cx"], boxes[4]["b"],
           bl["cx"], bl["t"],
           cs="arc3,rad=-0.12",
-          mutation=9)
+          mutation=9, patchB=bl["patch"])
     ax.text(6.35, 10.15, "structured output",
             ha="center", va="center", fontsize=6.5,
             color=LABEL_COL, fontstyle="italic",
@@ -261,7 +261,7 @@ def create_diagram(save_path, fmt="png"):
         start_x = ol["cx"] + dx * 0.35
         arrow(start_x, ol["b"],
               m["cx"], m["t"],
-              cs=f"arc3,rad={rad}", mutation=9)
+              cs=f"arc3,rad={rad}", mutation=9, patchB=m["patch"])
 
     # ==================================================================
     #  (4) EVALUATION PIPELINE
