@@ -115,9 +115,9 @@ def create_diagram(save_path, fmt="png"):
         p = FancyBboxPatch(
             (x, y), w, h,
             boxstyle="round,pad=0.15",
-            facecolor="none", edgecolor=color,
+            facecolor="none", edgecolor="#DADADA",
             linewidth=0.8, linestyle="-",
-            alpha=0.45, zorder=1)
+            alpha=0.75, zorder=1)
         ax.add_patch(p)
 
     # ==================================================================
