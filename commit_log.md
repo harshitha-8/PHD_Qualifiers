@@ -375,3 +375,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:20:42
 - **Change:** docs: add model comparison annotations
 
+### Commit 93 / 150
+- **Time:** 2026-03-20 19:21:43
+- **Change:** refactor: compute arrow trajectories dynamically
+
