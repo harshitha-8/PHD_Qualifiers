@@ -27,7 +27,7 @@ COL_SLURM   = "#C44E52"  # Matches COL_MODEL
 COL_HPC     = "#8172B2"  # Matches COL_OLLAMA
 COL_GPU     = "#E07B39"  # Matches COL_DECIDE
 COL_METRICS = "#55A868"  # Matches COL_PROMPT
-EDGE_COL    = "#444444"
+EDGE_COL    = "#333333"
 BG_COL      = "#FFFFFF"
 LABEL_COL   = "#555555"
 
@@ -91,7 +91,7 @@ def create_diagram(save_path, fmt="png"):
               arrow_style="-|>", mutation=12, label_color="#444444", alpha=1.0):
         a = FancyArrowPatch(
             (x1, y1), (x2, y2),
-            arrowstyle=arrow_style, color=color, linewidth=lw,
+            arrowstyle=arrow_style, color=EDGE_COL, linewidth=lw,
             linestyle="--" if dashed else "-",
             connectionstyle=cs, mutation_scale=mutation,
             zorder=2, shrinkA=shrinkA, shrinkB=shrinkB, alpha=alpha)
@@ -135,8 +135,8 @@ def create_diagram(save_path, fmt="png"):
     b1_3 = box(cols[0], y_start - y_gap*2, bw_col1, bh_col1, "Python 3.9.18 venv",
                "CUDA-enabled env", "Dependencies pre-loaded", color=COL_INPUT)
 
-    arrow(b1_1["cx"], b1_1["b"], b1_2["cx"], b1_2["t"], label="data path", lbl_off=(0.6, 0), color=COL_INPUT)
-    arrow(b1_2["cx"], b1_2["b"], b1_3["cx"], b1_3["t"], label="env", lbl_off=(0.4, 0), color=COL_INPUT)
+    arrow(b1_1["cx"], b1_1["b"], b1_2["cx"], b1_2["t"], label="store", lbl_off=(0.4, 0))
+    arrow(b1_2["cx"], b1_2["b"], b1_3["cx"], b1_3["t"], label="env", lbl_off=(0.4, 0))
 
 
     # ==================================================================
@@ -152,11 +152,10 @@ def create_diagram(save_path, fmt="png"):
     b2_3 = box(cols[1], y_start - y_gap*2, bw_col2, bh_col2, "Worker Allocation",
                "1 - 4 parallel workers", "Optimal: 1.75 workers", color=COL_SLURM)
 
-    arrow(b1_1["r"], b1_1["cy"], b2_1["l"], b2_1["cy"], label="load", lbl_off=(0, 0.2), color=COL_INPUT)
-    arrow(b1_3["r"], b1_3["cy"], b2_3["l"], b2_3["cy"], label="activate", lbl_off=(0, 0.2), color=COL_INPUT)
+    arrow(b1_3["r"], b1_3["cy"], b2_3["l"], b2_3["cy"], label="activate", lbl_off=(0, 0.2))
 
-    arrow(b2_1["cx"], b2_1["b"], b2_2["cx"], b2_2["t"], label="submit", lbl_off=(0.4, 0), color=COL_SLURM)
-    arrow(b2_2["cx"], b2_2["b"], b2_3["cx"], b2_3["t"], label="dispatch", lbl_off=(0.4, 0), color=COL_SLURM)
+    arrow(b2_1["cx"], b2_1["b"], b2_2["cx"], b2_2["t"], label="submit", lbl_off=(0.4, 0))
+    arrow(b2_2["cx"], b2_2["b"], b2_3["cx"], b2_3["t"], label="dispatch", lbl_off=(0.4, 0))
 
 
     # ==================================================================
@@ -176,9 +175,9 @@ def create_diagram(save_path, fmt="png"):
 
     # Shared File System -> Image Tile Generator (route above SLURM boxes)
     read_y  = 7.4
-    arrow(b1_2["r"], b1_2["cy"], b1_2["r"], read_y, color=COL_INPUT, arrow_style="-")
-    arrow(b1_2["r"], read_y, b3_2["l"], read_y, color=COL_INPUT, arrow_style="-")
-    arrow(b3_2["l"], read_y, b3_2["l"], b3_2["cy"], color=COL_INPUT)
+    arrow(b1_2["r"], b1_2["cy"], b1_2["r"], read_y, arrow_style="-")
+    arrow(b1_2["r"], read_y, b3_2["l"], read_y, arrow_style="-")
+    arrow(b3_2["l"], read_y, b3_2["l"], b3_2["cy"])
     add_text(b1_2["r"] + 0.25, read_y - 0.35, "read images", fontsize=6, color=LABEL_COL, style="italic", ha="left")
     
     # LLM Trigger Logic - highlighted with Orange
@@ -189,13 +188,13 @@ def create_diagram(save_path, fmt="png"):
                "Bloom count · density · heatmap", "-> structured advisory request", color=COL_HPC)
 
     # Connections from Slurm
-    arrow(b2_1["r"], b2_1["cy"], b3_1["l"], b3_1["cy"]-0.2, label="orchestrate", lbl_off=(-0.1, 0.2), color=COL_SLURM)
+    arrow(b2_1["r"], b2_1["cy"], b3_1["l"], b3_1["cy"]-0.2, label="orchestrate", lbl_off=(-0.1, 0.2))
 
     # Vertical sequence
-    arrow(b3_1["cx"], b3_1["b"], b3_2["cx"], b3_2["t"], label="tiles", lbl_off=(0.3, 0), color=COL_HPC)
-    arrow(b3_2["cx"], b3_2["b"], b3_3["cx"], b3_3["t"], label="detect", lbl_off=(0.3, 0), color=COL_HPC)
-    arrow(b3_3["cx"], b3_3["b"], b3_4["cx"], b3_4["t"], label="N count", lbl_off=(0.4, 0), color=COL_GPU)
-    arrow(b3_4["cx"], b3_4["b"], b3_5["cx"], b3_5["t"], label="YES branch", lbl_off=(0.4, 0), color=COL_HPC)
+    arrow(b3_1["cx"], b3_1["b"], b3_2["cx"], b3_2["t"], label="tiles", lbl_off=(0.3, 0))
+    arrow(b3_2["cx"], b3_2["b"], b3_3["cx"], b3_3["t"], label="detect", lbl_off=(0.3, 0))
+    arrow(b3_3["cx"], b3_3["b"], b3_4["cx"], b3_4["t"], label="N count", lbl_off=(0.4, 0))
+    arrow(b3_4["cx"], b3_4["b"], b3_5["cx"], b3_5["t"], label="YES branch", lbl_off=(0.4, 0))
 
 
     # ==================================================================
@@ -221,21 +220,19 @@ def create_diagram(save_path, fmt="png"):
                "1,294ms · 4.9GB", None, color=COL_GPU) # Orange
 
     # Connections into and within Column 4
-    arrow(b4_1["cx"], b4_1["b"], b4_2["cx"], b4_2["t"], label="CUDA", lbl_off=(0.3, 0), color=COL_SLURM)
-    arrow(b4_2["cx"], b4_2["b"], b4_3["cx"], b4_3["t"], label="sequential dispatch", lbl_off=(0.7, 0), color=COL_INPUT)
+    arrow(b4_1["cx"], b4_1["b"], b4_2["cx"], b4_2["t"], label="CUDA", lbl_off=(0.3, 0))
+    arrow(b4_2["cx"], b4_2["b"], b4_3["cx"], b4_3["t"], label="sequential dispatch", lbl_off=(0.7, 0))
     # SLURM reserves hardware nodes (route above HPCRoseDetector box)
     reserve_y = b3_1["t"] + 0.35
-    arrow(b2_1["r"], b2_1["cy"], b2_1["r"], reserve_y, color=COL_SLURM, arrow_style="-")
-    arrow(b2_1["r"], reserve_y, b4_1["l"], reserve_y, color=COL_SLURM, arrow_style="-")
-    arrow(b4_1["l"], reserve_y, b4_1["l"], b4_1["cy"], color=COL_SLURM, label="reserve node", lbl_off=(0.45, 0.15))
+    arrow(b2_1["r"], b2_1["cy"], b2_1["r"], reserve_y, arrow_style="-")
+    arrow(b2_1["r"], reserve_y, b4_1["l"], reserve_y, arrow_style="-")
+    arrow(b4_1["l"], reserve_y, b4_1["l"], b4_1["cy"], label="reserve node", lbl_off=(0.45, 0.15))
     
-    # Prompt Builders to Models (fan out representation like the reference)
-    # The reference shows arrows coming from Prompt Builder -> the models
-    arrow(b3_5["r"], b3_5["cy"], b4_5["l"]-0.5, b3_5["cy"], label="prompt ->", lbl_off=(0, 0.2), color=COL_HPC)
-    # Fan routing logic: Ollama routes to models
+    # Prompt Builder -> Ollama Server (clear CV->LLM handoff)
+    arrow(b3_5["r"], b3_5["cy"], b4_2["l"], b4_2["cy"], label="prompt ->", lbl_off=(0, 0.2))
     
-    # Worker Allocation to H100
-    arrow(b2_3["r"], b2_3["cy"], b4_2["l"], b2_3["cy"], dashed=True, color="#999999", alpha=0.5)
+    # Worker Allocation -> HPCRoseDetector (assign workers)
+    arrow(b2_3["r"], b2_3["cy"], b3_1["l"], b3_1["cy"]-0.3, label="assign workers", lbl_off=(0.0, 0.2))
 
 
     # ==================================================================
@@ -261,35 +258,35 @@ def create_diagram(save_path, fmt="png"):
     
     # Model outputs and metrics routing
     # All models -> Output Dirs
-    arrow(b4_3["r"], b4_3["cy"], b5_1["l"], b5_1["cy"], color=COL_METRICS)
-    arrow(b4_4["r"], b4_4["cy"], b5_1["l"], b5_1["cy"], color=COL_METRICS)
-    arrow(b4_5["r"], b4_5["cy"], b5_1["l"], b5_1["cy"], color=COL_METRICS)
+    arrow(b4_3["r"], b4_3["cy"], b5_1["l"], b5_1["cy"])
+    arrow(b4_4["r"], b4_4["cy"], b5_1["l"], b5_1["cy"])
+    arrow(b4_5["r"], b4_5["cy"], b5_1["l"], b5_1["cy"])
     # All models -> 7-Dim Metrics CSV
-    arrow(b4_3["r"], b4_3["cy"], b5_2["l"], b5_2["cy"], color=COL_METRICS)
-    arrow(b4_4["r"], b4_4["cy"], b5_2["l"], b5_2["cy"], color=COL_METRICS)
-    arrow(b4_5["r"], b4_5["cy"], b5_2["l"], b5_2["cy"], color=COL_METRICS)
+    arrow(b4_3["r"], b4_3["cy"], b5_2["l"], b5_2["cy"])
+    arrow(b4_4["r"], b4_4["cy"], b5_2["l"], b5_2["cy"])
+    arrow(b4_5["r"], b4_5["cy"], b5_2["l"], b5_2["cy"])
     # All models -> Scaling Analysis
-    arrow(b4_3["r"], b4_3["cy"], b5_3["l"], b5_3["cy"], color=COL_METRICS)
-    arrow(b4_4["r"], b4_4["cy"], b5_3["l"], b5_3["cy"], color=COL_METRICS)
-    arrow(b4_5["r"], b4_5["cy"], b5_3["l"], b5_3["cy"], color=COL_METRICS)
+    arrow(b4_3["r"], b4_3["cy"], b5_3["l"], b5_3["cy"])
+    arrow(b4_4["r"], b4_4["cy"], b5_3["l"], b5_3["cy"])
+    arrow(b4_5["r"], b4_5["cy"], b5_3["l"], b5_3["cy"])
     # All models -> Advisory Reports
-    arrow(b4_3["r"], b4_3["cy"], b5_4["l"], b5_4["cy"], color=COL_GPU)
-    arrow(b4_4["r"], b4_4["cy"], b5_4["l"], b5_4["cy"], color=COL_GPU)
-    arrow(b4_5["r"], b4_5["cy"], b5_4["l"], b5_4["cy"], color=COL_GPU)
+    arrow(b4_3["r"], b4_3["cy"], b5_4["l"], b5_4["cy"])
+    arrow(b4_4["r"], b4_4["cy"], b5_4["l"], b5_4["cy"])
+    arrow(b4_5["r"], b4_5["cy"], b5_4["l"], b5_4["cy"])
     
     # Scaling results inform worker allocation (feedback loop)
     # Routing an arrow backwards from Scaling Analysis (b5_3) to Worker Allocation (b2_3)
     w1_x, w1_y = b5_3["cx"], 0.7
     w2_x, w2_y = b2_3["cx"], 0.7
     # Segment 1 (down)
-    arrow(b5_3["cx"], b5_3["b"], w1_x, w1_y, dashed=True, color="#888888", shrinkA=SHRINK_A, shrinkB=0, arrow_style="-")
+    arrow(b5_3["cx"], b5_3["b"], w1_x, w1_y, dashed=True, shrinkA=SHRINK_A, shrinkB=0, arrow_style="-")
     # Segment 2 (left)
-    arrow(w1_x, w1_y, w2_x, w2_y, dashed=True, color="#888888",
+    arrow(w1_x, w1_y, w2_x, w2_y, dashed=True,
           shrinkA=0, shrinkB=0, arrow_style="-|>")
     # Add label on this horizontal segment
     add_text((w1_x + w2_x)/2, w1_y + 0.18, "scaling results inform worker allocation", fontsize=6, color=LABEL_COL, style="italic")
     # Segment 3 (up)
-    arrow(w2_x, w2_y, b2_3["cx"], b2_3["b"], dashed=True, color="#888888", shrinkA=0, shrinkB=SHRINK_B, arrow_style="-")
+    arrow(w2_x, w2_y, b2_3["cx"], b2_3["b"], dashed=True, shrinkA=0, shrinkB=SHRINK_B, arrow_style="-")
 
 
     fig.savefig(save_path, facecolor=BG_COL, edgecolor="none", format=fmt)

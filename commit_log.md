@@ -571,3 +571,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 20:10:43
 - **Change:** style: complete visual consistency review
 
+### Commit 142 / 150
+- **Time:** 2026-03-20 20:11:44
+- **Change:** docs: add research methodology notes
+
