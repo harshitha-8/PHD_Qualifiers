@@ -231,28 +231,29 @@ def create_diagram(save_path, fmt="png"):
     # ==================================================================
     bw_col5 = 2.6
     bh_col5 = 0.8
-    y5_start = 8.0
 
-    b5_1 = box(cols[4], y5_start, bw_col5, bh_col5, "Model Output Dirs",
+    b5_1 = box(cols[4], b4_1["cy"], bw_col5, bh_col5, "Model Output Dirs",
                "/mistral/ /gemma3/ /llama3/", "bbox · heatmap · report", color=COL_METRICS)
                
-    b5_2 = box(cols[4], y5_start - 2.0, bw_col5, bh_col5, "7-Dim Metrics CSV",
+    b5_2 = box(cols[4], b4_2["cy"], bw_col5, bh_col5, "7-Dim Metrics CSV",
                "latency · memory · quality", "throughput · efficiency · success", color=COL_METRICS)
                
-    b5_3 = box(cols[4], y5_start - 4.0, bw_col5, bh_col5, "Scaling Analysis",
+    b5_3 = box(cols[4], b4_4["cy"], bw_col5, bh_col5, "Scaling Analysis",
                "Strong: peak 1.75 workers", "Weak: linear throughput", color=COL_METRICS)
                
-    b5_4 = box(cols[4], y5_start - 6.0, bw_col5, bh_col5, "Advisory Reports",
+    b5_4 = box(cols[4], b4_5["cy"], bw_col5, bh_col5, "Advisory Reports",
                "harvest · spray · yield estimate", "per-nursery recommendations", color=COL_METRICS)
 
     # Connections to column 5
     arrow(b4_1["r"], b4_1["cy"], b5_1["l"], b5_1["cy"], label="write", lbl_off=(-0.3, 0.2), color=COL_METRICS)
     arrow(b4_2["r"], b4_2["cy"], b5_2["l"], b5_2["cy"], label="log", lbl_off=(-0.3, 0.2), color=COL_METRICS)
     
-    # Mistral/Gemma/Llama just have output arrows pointing right
+    # Mistral just points out to the right (nothing in column 5 aligns to it)
     arrow(b4_3["r"], b4_3["cy"], b4_3["r"]+1.2, b4_3["cy"], color=COL_INPUT)
-    arrow(b4_4["r"], b4_4["cy"], b4_4["r"]+1.2, b4_4["cy"], color=COL_METRICS)
-    arrow(b4_5["r"], b4_5["cy"], b4_5["r"]+1.2, b4_5["cy"], color=COL_GPU)
+    # Gemma points to Scaling Analysis
+    arrow(b4_4["r"], b4_4["cy"], b5_3["l"], b5_3["cy"], color=COL_METRICS)
+    # Llama points to Advisory Reports
+    arrow(b4_5["r"], b4_5["cy"], b5_4["l"], b5_4["cy"], color=COL_GPU)
     
     # Scaling results inform worker allocation (feedback loop)
     # Routing an arrow backwards from Scaling Analysis (b5_3) to Worker Allocation (b2_3)
