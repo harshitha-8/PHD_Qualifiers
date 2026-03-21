@@ -599,3 +599,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 20:17:53
 - **Change:** docs: add UAV orthomosaic capture parameters
 
+### Commit 149 / 150
+- **Time:** 2026-03-20 20:18:54
+- **Change:** style: adjust RGB preprocessing box dimensions
+
