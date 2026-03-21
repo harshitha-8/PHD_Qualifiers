@@ -371,3 +371,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:19:40
 - **Change:** style: highlight Llama3.1 with distinct color
 
+### Commit 92 / 150
+- **Time:** 2026-03-20 19:20:42
+- **Change:** docs: add model comparison annotations
+
