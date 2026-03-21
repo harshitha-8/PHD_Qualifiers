@@ -335,3 +335,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:10:27
 - **Change:** style: adjust bloom detection box placement
 
+### Commit 83 / 150
+- **Time:** 2026-03-20 19:11:29
+- **Change:** docs: add structured output annotation
+
