@@ -515,3 +515,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 19:56:24
 - **Change:** feat: document contour area filtering logic
 
+### Commit 128 / 150
+- **Time:** 2026-03-20 19:57:25
+- **Change:** docs: add bloom centroid calculation method
+
