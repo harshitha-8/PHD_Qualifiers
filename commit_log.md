@@ -595,3 +595,7 @@ Starting 150 commits at Fri Mar 20 17:43:00 CDT 2026
 - **Time:** 2026-03-20 20:16:52
 - **Change:** refactor: extract CV pipeline constants into config section
 
+### Commit 148 / 150
+- **Time:** 2026-03-20 20:17:53
+- **Change:** docs: add UAV orthomosaic capture parameters
+
