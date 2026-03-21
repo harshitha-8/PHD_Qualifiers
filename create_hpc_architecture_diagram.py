@@ -37,8 +37,8 @@ SHRINK_B = 3  # For mutation_scale=12
 
 
 def create_diagram(save_path, fmt="png"):
-    fig, ax = plt.subplots(figsize=(12, 7))
-    ax.set_xlim(0, 16)
+    fig, ax = plt.subplots(figsize=(13.5, 7.5))
+    ax.set_xlim(0, 17.5)
     ax.set_ylim(0, 10)
     ax.set_aspect("equal", adjustable="box")
     ax.axis("off")
@@ -108,7 +108,7 @@ def create_diagram(save_path, fmt="png"):
     # ==================================================================
     #  COLUMNS & HEADINGS
     # ==================================================================
-    cols = [1.5, 5.0, 8.5, 12.0, 15.0]
+    cols = [1.5, 5.0, 8.5, 12.0, 15.5]
     headings = [
         "INPUT DATA",
         "SLURM SCHEDULER",
@@ -172,14 +172,14 @@ def create_diagram(save_path, fmt="png"):
     b3_2 = box(cols[2], y3_start - y3_gap, bw_col3, bh_col3, "Image Tile Generator",
                "512x512 patches · 64px overlap", "~100 tiles per orthomosaic", color=COL_HPC)
     b3_3 = box(cols[2], y3_start - y3_gap*2, bw_col3, bh_col3, "CV Detection Engine",
-               "HSV → DBSCAN → Morphology", "Bloom count N per tile", color=COL_HPC)
+               "HSV -> DBSCAN -> Morphology", "Bloom count N per tile", color=COL_HPC)
     
     # LLM Trigger Logic - highlighted with Orange
     b3_4 = box(cols[2], y3_start - y3_gap*3, bw_col3, bh_col3, "LLM Trigger Logic",
                "IF N >= 10-15: invoke Ollama", "ELSE: skip tile (save compute)", color="#E07B39", alpha=0.15)
                
     b3_5 = box(cols[2], y3_start - y3_gap*4, bw_col3, bh_col3, "Prompt Builder",
-               "Bloom count · density · heatmap", "→ structured advisory request", color=COL_HPC)
+               "Bloom count · density · heatmap", "-> structured advisory request", color=COL_HPC)
 
     # Connections from Slurm
     arrow(b2_1["r"], b2_1["cy"], b3_1["l"], b3_1["cy"]-0.2, label="orchestrate", lbl_off=(-0.1, 0.2), color=COL_SLURM)
@@ -219,7 +219,7 @@ def create_diagram(save_path, fmt="png"):
     
     # Prompt Builders to Models (fan out representation like the reference)
     # The reference shows arrows coming from Prompt Builder -> the models
-    arrow(b3_5["r"], b3_5["cy"], b4_5["l"]-0.5, b3_5["cy"], label="prompt →", lbl_off=(0, 0.2), color=COL_HPC)
+    arrow(b3_5["r"], b3_5["cy"], b4_5["l"]-0.5, b3_5["cy"], label="prompt ->", lbl_off=(0, 0.2), color=COL_HPC)
     # Fan routing logic: Ollama routes to models
     
     # Worker Allocation to H100
@@ -246,25 +246,25 @@ def create_diagram(save_path, fmt="png"):
                "harvest · spray · yield estimate", "per-nursery recommendations", color=COL_METRICS)
 
     # Connections to column 5
-    arrow(b4_1["r"], b4_1["cy"], b5_1["l"], b5_1["cy"], label="write", lbl_off=(-0.2, 0.2), color=COL_METRICS)
-    arrow(b4_2["r"], b4_2["cy"], b5_2["l"], b5_2["cy"], label="log", lbl_off=(-0.2, 0.2), color=COL_METRICS)
+    arrow(b4_1["r"], b4_1["cy"], b5_1["l"], b5_1["cy"], label="write", lbl_off=(-0.3, 0.2), color=COL_METRICS)
+    arrow(b4_2["r"], b4_2["cy"], b5_2["l"], b5_2["cy"], label="log", lbl_off=(-0.3, 0.2), color=COL_METRICS)
     
-    arrow(b4_3["r"], b4_3["cy"], b5_3["l"], b4_3["cy"], color=COL_INPUT)
-    arrow(b4_4["r"], b4_4["cy"], b5_3["cx"], b5_3["b"]+1.4, color=COL_METRICS) # approximate routing
-    arrow(b4_5["r"], b4_5["cy"], b5_4["l"], b5_4["cy"], color=COL_GPU)
+    # Mistral/Gemma/Llama just have output arrows pointing right
+    arrow(b4_3["r"], b4_3["cy"], b4_3["r"]+1.2, b4_3["cy"], color=COL_INPUT)
+    arrow(b4_4["r"], b4_4["cy"], b4_4["r"]+1.2, b4_4["cy"], color=COL_METRICS)
+    arrow(b4_5["r"], b4_5["cy"], b4_5["r"]+1.2, b4_5["cy"], color=COL_GPU)
     
     # Scaling results inform worker allocation (feedback loop)
-    # Routing an arrow backwards from b5_3 to b2_3
-    # Waypoints: Drop down from Scaling Analysis, go left under everything, up to Worker Allocation
-    w1_x, w1_y = cols[4], 1.0
-    w2_x, w2_y = cols[1], 1.0
-    # Create segment 1 (down)
+    # Routing an arrow backwards from Scaling Analysis (b5_3) to Worker Allocation (b2_3)
+    w1_x, w1_y = b5_3["cx"], 0.7
+    w2_x, w2_y = b2_3["cx"], 0.7
+    # Segment 1 (down)
     arrow(b5_3["cx"], b5_3["b"], w1_x, w1_y, dashed=True, color="#888888", shrinkA=SHRINK_A, shrinkB=0, arrow_style="-")
-    # Create segment 2 (left)
+    # Segment 2 (left)
     arrow(w1_x, w1_y, w2_x, w2_y, dashed=True, color="#888888", shrinkA=0, shrinkB=0, arrow_style="-")
-    # Add label
-    add_text((w1_x + w2_x)/2, w1_y + 0.15, "scaling results inform worker allocation", fontsize=6, color=LABEL_COL, style="italic")
-    # Create segment 3 (up to Worker Allocation)
+    # Add label on this horizontal segment
+    add_text((w1_x + w2_x)/2, w1_y + 0.18, "scaling results inform worker allocation", fontsize=6, color=LABEL_COL, style="italic")
+    # Segment 3 (up)
     arrow(w2_x, w2_y, b2_3["cx"], b2_3["b"], dashed=True, color="#888888", shrinkA=0, shrinkB=SHRINK_B)
 
 
