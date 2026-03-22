@@ -31,9 +31,9 @@ LABEL_COL = "#000000"
 
 
 def create_diagram(save_path, fmt="png"):
-    fig, ax = plt.subplots(figsize=(16, 10))
-    ax.set_xlim(0, 24)
-    ax.set_ylim(0, 13)
+    fig, ax = plt.subplots(figsize=(26, 11))
+    ax.set_xlim(0, 31)
+    ax.set_ylim(0, 14.5)
     ax.set_aspect("equal", adjustable="box")
     ax.axis("off")
     fig.patch.set_facecolor(BG_COL)
@@ -93,7 +93,7 @@ def create_diagram(save_path, fmt="png"):
     # ==================================================================
     #  COLUMN X-CENTRES & HEADINGS
     # ==================================================================
-    cx1, cx2, cx3, cx4, cx5 = 2.0, 6.4, 11.6, 16.5, 21.6
+    cx1, cx2, cx3, cx4, cx5 = 3.0, 9.0, 16.0, 22.5, 28.5
     heading_y = 12.0
     
     headings = [
@@ -216,20 +216,20 @@ def create_diagram(save_path, fmt="png"):
     # "loaded by job": From SLURM (left) LEFT, DOWN, LEFT to Shared FS (right)
     slurm_lt = b_slurm["l"]
     sfs_rt = b_sfs["r"]
-    mid_x_1 = 4.0
+    mid_x_1 = 6.2
     arr(slurm_lt, (mid_x_1, slurm_lt[1]), headless=True)
     arr((mid_x_1, slurm_lt[1]), (mid_x_1, sfs_rt[1]), headless=True)
     arr((mid_x_1, sfs_rt[1]), sfs_rt)
-    label(mid_x_1 - 0.1, (slurm_lt[1] + sfs_rt[1]) / 2, "loaded\nby job", ha="right", va="center", fs=7)
+    label((mid_x_1 + sfs_rt[0]) / 2, sfs_rt[1] + 0.1, "loaded by job", ha="center", va="bottom", fs=7)
 
     # "Uses env": From Python venv (right) RIGHT, UP, RIGHT to SLURM (left)
     venv_rt = b_venv["r"]
-    mid_x_2 = 4.3
+    mid_x_2 = 5.4
     dest_y_slurm = b_slurm["cy"] - 0.4 # Enter low on the left edge
     arr(venv_rt, (mid_x_2, venv_rt[1]), headless=True)
     arr((mid_x_2, venv_rt[1]), (mid_x_2, dest_y_slurm), headless=True)
     arr((mid_x_2, dest_y_slurm), (b_slurm["l"][0], dest_y_slurm))
-    label(mid_x_2 + 0.1, (venv_rt[1] + dest_y_slurm) / 2, "Uses\nenv", ha="left", va="center", fs=7)
+    label((mid_x_2 + b_slurm["l"][0]) / 2, dest_y_slurm + 0.1, "Uses env", ha="center", va="bottom", fs=7)
 
     # "orchestrate": SLURM (right) to HPC Run (left)
     arr(b_slurm["r"], (b_run["l"][0], b_slurm["cy"]), lbl="orchestrate", loff=(0, 0.2), lbl_va="bottom", lbl_fs=7)
@@ -254,7 +254,7 @@ def create_diagram(save_path, fmt="png"):
     queue_rt = b_queue["r"]
     tile_lt = b_tile["l"]
     
-    pass_x = (b_queue["r"][0] + b_tile["l"][0]) / 2 - 0.2
+    pass_x = (b_queue["r"][0] + b_tile["l"][0]) / 2 - 0.5
     arr(queue_rt, (pass_x, queue_rt[1]), headless=True)
     arr((pass_x, queue_rt[1]), (pass_x, tile_lt[1]), headless=True)
     arr((pass_x, tile_lt[1]), tile_lt)
@@ -262,16 +262,16 @@ def create_diagram(save_path, fmt="png"):
 
     # NO: tile discarded: Dashed LEFT from LLM Trigger Logic
     trig_lt = b_trig["l"]
-    no_end = (trig_lt[0] - 1.2, trig_lt[1])
-    arr(trig_lt, (trig_lt[0] - 0.3, trig_lt[1]), dashed=True, headless=True)
-    arr((trig_lt[0] - 0.3, trig_lt[1]), (trig_lt[0] - 0.3, trig_lt[1] - 0.6), dashed=True, headless=True)
-    arr((trig_lt[0] - 0.3, trig_lt[1] - 0.6), (no_end[0], trig_lt[1] - 0.6), dashed=True)
-    label(no_end[0] + 0.45, trig_lt[1] - 0.6 + 0.1, "NO: tile discarded", fs=6, va="bottom")
+    no_end = (trig_lt[0] - 2.0, trig_lt[1]) # Stretch dashed line 2.0 units left
+    arr(trig_lt, (trig_lt[0] - 0.5, trig_lt[1]), dashed=True, headless=True)
+    arr((trig_lt[0] - 0.5, trig_lt[1]), (trig_lt[0] - 0.5, trig_lt[1] - 0.6), dashed=True, headless=True)
+    arr((trig_lt[0] - 0.5, trig_lt[1] - 0.6), (no_end[0], trig_lt[1] - 0.6), dashed=True)
+    label((trig_lt[0] - 0.5 + no_end[0]) / 2, trig_lt[1] - 0.6 + 0.1, "NO: tile discarded", ha="center", va="bottom", fs=7)
     
     # "prompt": Prompt Builder (right) RIGHT, UP, RIGHT to Ollama (left)
     prmpt_rt = b_prmpt["r"]
     oll_lt = b_ollama["l"]
-    prompt_x = prmpt_rt[0] + 0.5
+    prompt_x = prmpt_rt[0] + 0.8
     arr(prmpt_rt, (prompt_x, prmpt_rt[1]), headless=True)
     arr((prompt_x, prmpt_rt[1]), (prompt_x, oll_lt[1]), headless=True)
     arr((prompt_x, oll_lt[1]), oll_lt)
