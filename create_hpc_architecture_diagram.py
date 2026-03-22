@@ -85,11 +85,12 @@ def create_diagram(save_path, fmt="png"):
                 
         return dict(cx=x, cy=y, w=w, h=h, t=y + h / 2, b=y - h / 2, l=x - w / 2, r=x + w / 2)
 
-    # Edge helpers (account for rounded box padding)
-    def edge_top(b):    return b["t"] + BOX_PAD
-    def edge_bottom(b): return b["b"] - BOX_PAD
-    def edge_left(b):   return b["l"] - BOX_PAD
-    def edge_right(b):  return b["r"] + BOX_PAD
+    # Edge helpers – arrows attach directly to the painted box edge
+    # (no extra BOX_PAD offset; the round-pad is purely cosmetic)
+    def edge_top(b):    return b["t"]
+    def edge_bottom(b): return b["b"]
+    def edge_left(b):   return b["l"]
+    def edge_right(b):  return b["r"]
 
     # ── Arrow Helper ──────────────────────────────────────────────────
     def arrow(x1, y1, x2, y2, label=None, color=EDGE_COL, lw=1.2, dashed=False,
@@ -182,8 +183,8 @@ def create_diagram(save_path, fmt="png"):
     bw_col3 = 3.2
     bh_col3 = 0.8
     # Even vertical spacing in HPCRoseDetector column
-    y3_gap = 1.0
-    y3_start = 7.4
+    y3_gap = 1.1
+    y3_start = 7.6
 
     b3_1 = box(cols[2], y3_start, bw_col3, bh_col3, "HPCRoseDetector.run()",
                "Orchestrator class · Python 3.9.18", "CUDA-accelerated · batch_size=16", color=COL_HPC)
@@ -192,14 +193,22 @@ def create_diagram(save_path, fmt="png"):
     b3_3 = box(cols[2], y3_start - y3_gap*2, bw_col3, bh_col3, "CV Detection Engine",
                "HSV -> DBSCAN -> Morphology", "Bloom count N per tile", color=COL_HPC)
 
-    # Shared File System -> Image Tile Generator (clean L-shaped elbow)
-    read_start_x = edge_right(b1_2)
-    read_mid_x = (b2_2["r"] + b3_2["l"]) / 2
-    arrow(read_start_x, b1_2["cy"], read_mid_x, b1_2["cy"], arrow_style="-")
-    arrow(read_mid_x, b1_2["cy"], read_mid_x, b3_2["cy"], arrow_style="-")
-    arrow(read_mid_x, b3_2["cy"], edge_left(b3_2), b3_2["cy"])
-    ax.text(read_start_x + 0.3, b1_2["cy"] + 0.22, "read images",
-            ha="left", va="center", fontsize=6, color=LABEL_COL,
+    # Shared File System -> Image Tile Generator
+    # Fix 4: L-shaped elbow: go down from Shared File System's bottom,
+    # then right UNDER all SLURM boxes, then up into Image Tile Generator.
+    read_start_y  = b1_2["b"]                # bottom of Shared File System
+    read_bottom_y = b1_3["b"] - 0.3          # well below Python venv (lowest col1 box)
+    read_entry_x  = edge_left(b3_2)          # left side of Image Tile Generator
+    # Down from Shared File System
+    arrow(b1_2["cx"] + 0.8, b1_2["b"], b1_2["cx"] + 0.8, read_bottom_y, arrow_style="-")
+    # Right under SLURM boxes to HPC column
+    arrow(b1_2["cx"] + 0.8, read_bottom_y, read_entry_x, read_bottom_y, arrow_style="-")
+    # Up into Image Tile Generator's left side
+    arrow(read_entry_x, read_bottom_y, read_entry_x, b3_2["cy"], arrow_style="-")
+    arrow(read_entry_x, b3_2["cy"], b3_2["l"], b3_2["cy"])
+    # Label near the bottom horizontal segment
+    ax.text((b1_2["cx"] + 0.8 + read_entry_x) / 2, read_bottom_y + 0.2, "read images",
+            ha="center", va="center", fontsize=6, color=LABEL_COL,
             fontstyle="italic", zorder=6,
             bbox=dict(facecolor="white", edgecolor="none", pad=0.4, alpha=0.95))
     
@@ -222,11 +231,18 @@ def create_diagram(save_path, fmt="png"):
             fontstyle="italic", fontweight="bold", zorder=6,
             bbox=dict(facecolor="white", edgecolor="none", pad=0.3, alpha=0.95))
 
-    # Vertical sequence
-    arrow(b3_1["cx"], edge_bottom(b3_1), b3_2["cx"], edge_top(b3_2), label="tiles", lbl_off=(0.3, -0.15))
-    arrow(b3_2["cx"], edge_bottom(b3_2), b3_3["cx"], edge_top(b3_3), label="detect", lbl_off=(0.3, -0.15))
-    arrow(b3_3["cx"], edge_bottom(b3_3), b3_4["cx"], edge_top(b3_4), label="N count", lbl_off=(0.4, -0.15))
-    arrow(b3_4["cx"], edge_bottom(b3_4), b3_5["cx"], edge_top(b3_5), label="YES branch", lbl_off=(0.4, -0.15))
+    # Vertical sequence (Fix 3: arrows snap to box edges)
+    arrow(b3_1["cx"], b3_1["b"], b3_2["cx"], b3_2["t"], label="tiles", lbl_off=(0.5, 0))
+    arrow(b3_2["cx"], b3_2["b"], b3_3["cx"], b3_3["t"], label="detect", lbl_off=(0.5, 0))
+    arrow(b3_3["cx"], b3_3["b"], b3_4["cx"], b3_4["t"], label="N count", lbl_off=(0.55, 0))
+    # Fix 5: "YES branch" label placed to the LEFT of the arrow, clear of box text
+    arrow(b3_4["cx"], b3_4["b"], b3_5["cx"], b3_5["t"])
+    # Place label manually to the left, midway between the two boxes
+    yes_mid_y = (b3_4["b"] + b3_5["t"]) / 2
+    ax.text(b3_4["cx"] - 1.2, yes_mid_y, "YES branch",
+            ha="center", va="center", fontsize=6.5, color="#2E7D32",
+            fontstyle="italic", fontweight="bold", zorder=6,
+            bbox=dict(facecolor="white", edgecolor="none", pad=0.4, alpha=0.95))
     # NO branch from LLM Trigger Logic -> termination (tile discarded)
     no_x = b3_4["l"] - 0.35
     arrow(b3_4["l"], b3_4["cy"], no_x, b3_4["cy"], dashed=True, arrow_style="-")
@@ -287,12 +303,16 @@ def create_diagram(save_path, fmt="png"):
     arrow(prompt_mid_x, b3_5["cy"], prompt_mid_x, b4_2["cy"], arrow_style="-")
     arrow(prompt_mid_x, b4_2["cy"], edge_left(b4_2), b4_2["cy"], label="prompt ->", lbl_off=(0, 0.2))
     
-    # Worker Allocation -> HPCRoseDetector (assign workers) with horizontal entry
-    assign_x = (b2_3["r"] + b3_1["l"]) / 2
+    # Fix 2: Worker Allocation -> HPCRoseDetector.run() (NOT Image Tile Generator)
+    # L-shaped arrow: right from Worker Allocation, up to HPCRoseDetector.run() row,
+    # then left into HPCRoseDetector.run() left edge.
+    assign_mid_y = b3_1["cy"]           # target row
+    assign_x     = b2_3["r"] + 0.25     # elbow x (tight to SLURM right edge)
     arrow(edge_right(b2_3), b2_3["cy"], assign_x, b2_3["cy"], arrow_style="-")
-    arrow(assign_x, b2_3["cy"], assign_x, b3_1["cy"], arrow_style="-")
-    arrow(assign_x, b3_1["cy"], edge_left(b3_1), b3_1["cy"])
-    ax.text((b2_3["r"] + assign_x) / 2, b2_3["cy"] + 0.25, "assign workers",
+    arrow(assign_x, b2_3["cy"], assign_x, assign_mid_y, arrow_style="-")
+    arrow(assign_x, assign_mid_y, edge_left(b3_1), assign_mid_y)
+    # Label along the vertical segment
+    ax.text(assign_x - 0.5, (b2_3["cy"] + assign_mid_y) / 2, "assign\nworkers",
             ha="center", va="center", fontsize=6, color=LABEL_COL,
             fontstyle="italic", zorder=6,
             bbox=dict(facecolor="white", edgecolor="none", pad=0.3, alpha=0.95))
@@ -304,41 +324,48 @@ def create_diagram(save_path, fmt="png"):
     bw_col5 = 2.6
     bh_col5 = 0.8
 
-    # Evenly distribute output boxes across the LLM vertical span
-    out_gap = (b4_3["cy"] - b4_5["cy"]) / 3
-    out_base_y = b4_3["cy"] + 0.15
-    b5_1 = box(cols[4], out_base_y, bw_col5, bh_col5, "Model Output Dirs",
+    # Fix 1: Move output boxes up so top aligns with Mistral 7B's height,
+    # and distribute evenly with generous vertical gaps.
+    out_top_y = b4_3["cy"]          # align "Model Output Dirs" with Mistral 7B
+    out_bot_y = b4_5["cy"] - 0.8    # extend well below Llama3.1 for breathing room
+    out_gap   = (out_top_y - out_bot_y) / 3   # equal spacing between 4 boxes
+
+    b5_1 = box(cols[4], out_top_y,             bw_col5, bh_col5, "Model Output Dirs",
                "/mistral/ /gemma3/ /llama3/", "bbox · heatmap · report", color=COL_METRICS)
                
-    b5_2 = box(cols[4], out_base_y - out_gap, bw_col5, bh_col5, "7-Dim Metrics CSV",
+    b5_2 = box(cols[4], out_top_y - out_gap,   bw_col5, bh_col5, "7-Dim Metrics CSV",
                "latency · memory · quality", "throughput · efficiency · success", color=COL_METRICS)
                
-    b5_3 = box(cols[4], out_base_y - 2*out_gap, bw_col5, bh_col5, "Scaling Analysis",
+    b5_3 = box(cols[4], out_top_y - 2*out_gap, bw_col5, bh_col5, "Scaling Analysis",
                "Strong: peak 1.75 workers", "Weak: linear throughput", color=COL_METRICS)
                
-    b5_4 = box(cols[4], out_base_y - 3*out_gap, bw_col5, bh_col5, "Advisory Reports",
+    b5_4 = box(cols[4], out_top_y - 3*out_gap, bw_col5, bh_col5, "Advisory Reports",
                "harvest · spray · yield estimate", "per-nursery recommendations", color=COL_METRICS)
 
-    # Connections to column 5
-    # Metrics and outputs come from model inference outputs, not directly from Ollama or GPU hardware
-    
-    # Model outputs and metrics routing
-    # All models -> Output Dirs
-    arrow(b4_3["r"], b4_3["cy"], b5_1["l"], b5_1["cy"])
-    arrow(b4_4["r"], b4_4["cy"], b5_1["l"], b5_1["cy"])
-    arrow(b4_5["r"], b4_5["cy"], b5_1["l"], b5_1["cy"])
-    # All models -> 7-Dim Metrics CSV
-    arrow(b4_3["r"], b4_3["cy"], b5_2["l"], b5_2["cy"])
-    arrow(b4_4["r"], b4_4["cy"], b5_2["l"], b5_2["cy"])
-    arrow(b4_5["r"], b4_5["cy"], b5_2["l"], b5_2["cy"])
-    # All models -> Scaling Analysis
-    arrow(b4_3["r"], b4_3["cy"], b5_3["l"], b5_3["cy"])
-    arrow(b4_4["r"], b4_4["cy"], b5_3["l"], b5_3["cy"])
-    arrow(b4_5["r"], b4_5["cy"], b5_3["l"], b5_3["cy"])
-    # All models -> Advisory Reports
-    arrow(b4_3["r"], b4_3["cy"], b5_4["l"], b5_4["cy"])
-    arrow(b4_4["r"], b4_4["cy"], b5_4["l"], b5_4["cy"])
-    arrow(b4_5["r"], b4_5["cy"], b5_4["l"], b5_4["cy"])
+    # ------------------------------------------------------------------
+    # Fix 6: Clean LLM -> output routing (avoid 12 tangled arrows)
+    # Route each model to its nearest 2 outputs; add annotation.
+    # Mistral  -> Model Output Dirs, 7-Dim Metrics CSV      (top two)
+    # Gemma3   -> 7-Dim Metrics CSV,  Scaling Analysis       (middle two)
+    # Llama3.1 -> Scaling Analysis,   Advisory Reports       (bottom two)
+    # ------------------------------------------------------------------
+    arrow(b4_3["r"], b4_3["cy"], b5_1["l"], b5_1["cy"], lw=1.0)
+    arrow(b4_3["r"], b4_3["cy"], b5_2["l"], b5_2["cy"], lw=1.0)
+
+    arrow(b4_4["r"], b4_4["cy"], b5_2["l"], b5_2["cy"], lw=1.0)
+    arrow(b4_4["r"], b4_4["cy"], b5_3["l"], b5_3["cy"], lw=1.0)
+
+    arrow(b4_5["r"], b4_5["cy"], b5_3["l"], b5_3["cy"], lw=1.0)
+    arrow(b4_5["r"], b4_5["cy"], b5_4["l"], b5_4["cy"], lw=1.0)
+
+    # Annotation: clarify that every model feeds every output
+    note_x = (b4_3["r"] + b5_1["l"]) / 2
+    note_y = b5_4["b"] - 0.4
+    ax.text(note_x, note_y, "all models -> all outputs",
+            ha="center", va="center", fontsize=6.5, color="#666666",
+            fontstyle="italic", fontweight="bold", zorder=6,
+            bbox=dict(facecolor="#FFFFCC", edgecolor="#CCCC88",
+                      boxstyle="round,pad=0.3", alpha=0.95))
     
     # (Feedback loop removed to avoid dashed artifact box)
 
