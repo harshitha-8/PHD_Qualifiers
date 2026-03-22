@@ -220,7 +220,7 @@ def create_diagram(save_path, fmt="png"):
     arr(slurm_lt, (mid_x_1, slurm_lt[1]), headless=True)
     arr((mid_x_1, slurm_lt[1]), (mid_x_1, sfs_lt[1]), headless=True)
     arr((mid_x_1, sfs_lt[1]), sfs_lt)
-    label(mid_x_1 + 0.1, (slurm_lt[1] + sfs_lt[1]) / 2, "loaded by job", ha="left")
+    label(mid_x_1 + 0.05, sfs_lt[1] + 0.5, "loaded by job", ha="left", fs=6.5)
 
     # "Uses env": From Python venv (right) RIGHT, UP, RIGHT to SLURM (left)
     venv_rt = b_venv["r"]
@@ -229,10 +229,10 @@ def create_diagram(save_path, fmt="png"):
     arr(venv_rt, (mid_x_2, venv_rt[1]), headless=True)
     arr((mid_x_2, venv_rt[1]), (mid_x_2, dest_y_slurm), headless=True)
     arr((mid_x_2, dest_y_slurm), (b_slurm["l"][0], dest_y_slurm))
-    label(mid_x_2 - 0.3, dest_y_slurm + 0.1, "Uses env", ha="center", va="bottom")
+    label(mid_x_2 - 0.3, dest_y_slurm + 0.15, "Uses env", ha="center", va="bottom", fs=6.5)
 
     # "orchestrate": SLURM (right) to HPC Run (left)
-    arr(b_slurm["r"], (b_run["l"][0], b_slurm["cy"]), lbl="orchestrate", loff=(0, 0.15), lbl_va="bottom")
+    arr(b_slurm["r"], (b_run["l"][0], b_slurm["cy"]), lbl="orchestrate", loff=(0, 0.2), lbl_va="bottom", lbl_fs=6.5)
 
     # "reserve node": Dashed, from SLURM (top) UP, RIGHT, DOWN to H100 (top)
     sl_top = b_slurm["t"]
@@ -258,7 +258,7 @@ def create_diagram(save_path, fmt="png"):
     arr(queue_rt, (pass_x, queue_rt[1]), headless=True)
     arr((pass_x, queue_rt[1]), (pass_x, tile_lt[1]), headless=True)
     arr((pass_x, tile_lt[1]), tile_lt)
-    label(pass_x, tile_lt[1] + 0.1, "read images", ha="center", va="bottom")
+    label(pass_x, tile_lt[1] + 0.15, "read images", ha="center", va="bottom", fs=6.5)
 
     # NO: tile discarded: Dashed LEFT from LLM Trigger Logic
     trig_lt = b_trig["l"]
@@ -275,7 +275,7 @@ def create_diagram(save_path, fmt="png"):
     arr(prmpt_rt, (prompt_x, prmpt_rt[1]), headless=True)
     arr((prompt_x, prmpt_rt[1]), (prompt_x, oll_lt[1]), headless=True)
     arr((prompt_x, oll_lt[1]), oll_lt)
-    label(prompt_x, oll_lt[1] + 0.1, "prompt", ha="center", va="bottom")
+    label(prompt_x, oll_lt[1] + 0.15, "prompt", ha="center", va="bottom", fs=6.5)
 
 
     # -- 12 Criss-Cross Arrows --
