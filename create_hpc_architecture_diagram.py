@@ -75,7 +75,7 @@ def create_diagram(save_path, fmt="png"):
 
     # ── Arrow: straight ──────────────────────────────────────────────
     def arr(p1, p2, lbl=None, loff=(0, 0), color=EDGE_COL, lw=1.2,
-            dashed=False, headless=False, lbl_fs=7):
+            dashed=False, headless=False, lbl_fs=7, lbl_ha="center", lbl_va="center"):
         style = "-" if headless else "-|>"
         a = FancyArrowPatch(
             p1, p2,
@@ -87,11 +87,8 @@ def create_diagram(save_path, fmt="png"):
         if lbl:
             mx = (p1[0] + p2[0]) / 2 + loff[0]
             my = (p1[1] + p2[1]) / 2 + loff[1]
-            ax.text(mx, my, lbl, ha="center", va="center",
-                    fontsize=lbl_fs, color=LABEL_COL,
-                    zorder=6,
-                    bbox=dict(facecolor="white", edgecolor="none",
-                              pad=0.2, alpha=0.9))
+            ax.text(mx, my, lbl, ha=lbl_ha, va=lbl_va,
+                    fontsize=lbl_fs, color=LABEL_COL, zorder=6)
 
     # ==================================================================
     #  COLUMN X-CENTRES & HEADINGS
@@ -195,20 +192,20 @@ def create_diagram(save_path, fmt="png"):
     # COL 1
     # UAV to Shared FS is an arrow going down, no label
     arr(b_uav["b"], b_sfs["t"])
-    arr(b_sfs["b"], b_venv["t"], lbl="env")
+    arr(b_sfs["b"], b_venv["t"], lbl="env", loff=(0.2, 0), lbl_ha="left")
 
     # COL 2
-    arr(b_slurm["b"], b_queue["t"], lbl="submit")
-    arr(b_queue["b"], b_work["t"], lbl="dispatch")
+    arr(b_slurm["b"], b_queue["t"], lbl="submit", loff=(0.2, 0), lbl_ha="left")
+    arr(b_queue["b"], b_work["t"], lbl="dispatch", loff=(0.2, 0), lbl_ha="left")
 
     # COL 3
-    arr(b_run["b"], b_tile["t"], lbl="tiles")
-    arr(b_tile["b"], b_cv["t"], lbl="detect")
-    arr(b_cv["b"], b_trig["t"], lbl="N count")
-    arr(b_trig["b"], b_prmpt["t"], lbl="YES branch")
+    arr(b_run["b"], b_tile["t"], lbl="tiles", loff=(0.2, 0), lbl_ha="left")
+    arr(b_tile["b"], b_cv["t"], lbl="detect", loff=(0.2, 0), lbl_ha="left")
+    arr(b_cv["b"], b_trig["t"], lbl="N count", loff=(0.2, 0), lbl_ha="left")
+    arr(b_trig["b"], b_prmpt["t"], lbl="YES branch", loff=(0.2, 0), lbl_ha="left")
 
     # COL 4
-    arr(b_node["b"], b_ollama["t"], lbl="CUDA", loff=(0.4, 0))
+    arr(b_node["b"], b_ollama["t"], lbl="CUDA", loff=(0.2, 0), lbl_ha="left")
     arr(b_ollama["b"], b_mist["t"])
     arr(b_mist["b"], b_gemma["t"])
     arr(b_gemma["b"], b_llama["t"])
@@ -223,7 +220,7 @@ def create_diagram(save_path, fmt="png"):
     arr(slurm_lt, (mid_x_1, slurm_lt[1]), headless=True)
     arr((mid_x_1, slurm_lt[1]), (mid_x_1, sfs_lt[1]), headless=True)
     arr((mid_x_1, sfs_lt[1]), sfs_lt)
-    label(mid_x_1 - 0.4, (slurm_lt[1] + sfs_lt[1]) / 2, "loaded by job")
+    label(mid_x_1 + 0.1, (slurm_lt[1] + sfs_lt[1]) / 2, "loaded by job", ha="left")
 
     # "Uses env": From Python venv (right) RIGHT, UP, RIGHT to SLURM (left)
     venv_rt = b_venv["r"]
@@ -232,19 +229,19 @@ def create_diagram(save_path, fmt="png"):
     arr(venv_rt, (mid_x_2, venv_rt[1]), headless=True)
     arr((mid_x_2, venv_rt[1]), (mid_x_2, dest_y_slurm), headless=True)
     arr((mid_x_2, dest_y_slurm), (b_slurm["l"][0], dest_y_slurm))
-    label(mid_x_2 - 0.4, dest_y_slurm + 0.15, "Uses env")
+    label(mid_x_2 - 0.3, dest_y_slurm + 0.1, "Uses env", ha="center", va="bottom")
 
     # "orchestrate": SLURM (right) to HPC Run (left)
-    arr(b_slurm["r"], (b_run["l"][0], b_slurm["cy"]), lbl="orchestrate", loff=(0, 0.2))
+    arr(b_slurm["r"], (b_run["l"][0], b_slurm["cy"]), lbl="orchestrate", loff=(0, 0.15), lbl_va="bottom")
 
     # "reserve node": Dashed, from SLURM (top) UP, RIGHT, DOWN to H100 (top)
     sl_top = b_slurm["t"]
     hn_top = b_node["t"]
-    res_y = 11.7 # high above HPC run
+    res_y = 11.4 # Lowered below horizontal line at 11.7
     arr(sl_top, (sl_top[0], res_y), dashed=True, headless=True)
     arr((sl_top[0], res_y), (hn_top[0], res_y), dashed=True, headless=True)
     arr((hn_top[0], res_y), hn_top, dashed=True)
-    label((sl_top[0] + hn_top[0]) / 2, res_y + 0.25, "reserve mode")
+    label((sl_top[0] + hn_top[0]) / 2, res_y + 0.1, "reserve mode", va="bottom")
 
     # Worker Allocation to HPC Run: RIGHT, UP, RIGHT into bottom corner of HPC Run
     wk_rt = b_work["r"]
@@ -261,7 +258,7 @@ def create_diagram(save_path, fmt="png"):
     arr(queue_rt, (pass_x, queue_rt[1]), headless=True)
     arr((pass_x, queue_rt[1]), (pass_x, tile_lt[1]), headless=True)
     arr((pass_x, tile_lt[1]), tile_lt)
-    label(pass_x - 0.45, (queue_rt[1] + tile_lt[1]) / 2, "read images")
+    label(pass_x, tile_lt[1] + 0.1, "read images", ha="center", va="bottom")
 
     # NO: tile discarded: Dashed LEFT from LLM Trigger Logic
     trig_lt = b_trig["l"]
@@ -269,7 +266,7 @@ def create_diagram(save_path, fmt="png"):
     arr(trig_lt, (trig_lt[0] - 0.3, trig_lt[1]), dashed=True, headless=True)
     arr((trig_lt[0] - 0.3, trig_lt[1]), (trig_lt[0] - 0.3, trig_lt[1] - 0.6), dashed=True, headless=True)
     arr((trig_lt[0] - 0.3, trig_lt[1] - 0.6), (no_end[0], trig_lt[1] - 0.6), dashed=True)
-    label(no_end[0] + 0.5, trig_lt[1] - 0.4, "NO: tile discarded", fs=6)
+    label(no_end[0] + 0.5, trig_lt[1] - 0.3, "NO: tile discarded", fs=6, va="bottom")
     
     # "prompt": Prompt Builder (right) RIGHT, UP, RIGHT to Ollama (left)
     prmpt_rt = b_prmpt["r"]
@@ -278,7 +275,7 @@ def create_diagram(save_path, fmt="png"):
     arr(prmpt_rt, (prompt_x, prmpt_rt[1]), headless=True)
     arr((prompt_x, prmpt_rt[1]), (prompt_x, oll_lt[1]), headless=True)
     arr((prompt_x, oll_lt[1]), oll_lt)
-    label(prompt_x - 0.3, oll_lt[1], "prompt")
+    label(prompt_x, oll_lt[1] + 0.1, "prompt", ha="center", va="bottom")
 
 
     # -- 12 Criss-Cross Arrows --
@@ -287,7 +284,7 @@ def create_diagram(save_path, fmt="png"):
     
     for llm in llms:
         for out in outputs:
-            arr(llm["r"], out["l"], color="#888888", lw=1.0) # Grey arrows for the bundle
+            arr(llm["r"], out["l"], color=EDGE_COL, lw=1.0) # Black arrows for the bundle
 
     # "sequential dispatch" label above the bundle
     label((b_mist["r"][0] + b_out1["l"][0]) / 2, b_mist["cy"] + 0.6, "sequential\ndispatch")
@@ -297,10 +294,10 @@ def create_diagram(save_path, fmt="png"):
     adv_bot = b_out4["b"]
     work_bot = b_work["b"]
     fb_y = 0.5
-    arr(adv_bot, (adv_bot[0], fb_y), dashed=True, headless=True, color="#888888")
-    arr((adv_bot[0], fb_y), (work_bot[0], fb_y), dashed=True, headless=True, color="#888888")
-    arr((work_bot[0], fb_y), work_bot, dashed=True, color="#888888")
-    label((adv_bot[0] + work_bot[0]) / 2, fb_y + 0.2, "scaling results inform worker allocation", fs=7)
+    arr(adv_bot, (adv_bot[0], fb_y), dashed=True, headless=True, color=EDGE_COL)
+    arr((adv_bot[0], fb_y), (work_bot[0], fb_y), dashed=True, headless=True, color=EDGE_COL)
+    arr((work_bot[0], fb_y), work_bot, dashed=True, color=EDGE_COL)
+    label((adv_bot[0] + work_bot[0]) / 2, fb_y + 0.1, "scaling results inform worker allocation", fs=7, va="bottom")
 
 
     # ==================================================================
