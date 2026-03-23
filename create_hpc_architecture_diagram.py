@@ -67,7 +67,7 @@ def create_diagram(save_path, fmt="png"):
         if len(lines) > 1:
             sub = '\n'.join(lines[1:])
             ax.text(cx, title_y - 0.35, sub, ha='center', va='top', 
-                    fontsize=10.5, fontweight='bold', zorder=5, linespacing=1.4)
+                    fontsize=9.5, fontweight='normal', zorder=5, linespacing=1.4)
 
         return dict(cx=cx, cy=cy, w=w, h=h,
                     t=(cx, cy + h/2 + 0.08), b=(cx, cy - h/2 - 0.08),
@@ -97,11 +97,11 @@ def create_diagram(save_path, fmt="png"):
     # ==================================================================
     #  BOXES WIDTHS & HEIGHTS
     # ==================================================================
-    w1, h1 = 4.0, 1.4
+    w1, h1 = 3.8, 1.4
     w2, h2 = 3.8, 1.4
-    w3, h3 = 4.8, 1.4
+    w3, h3 = 4.6, 1.4
     w4, h4 = 3.8, 1.3
-    w5, h5 = 6.0, 1.4
+    w5, h5 = 5.0, 1.4
 
     heading_y = 12.0
     headings = [
@@ -115,7 +115,7 @@ def create_diagram(save_path, fmt="png"):
     for cx, txt, hw in headings:
         label(cx, heading_y, txt, fs=12, weight="bold")
         # Horizontal line below heading (dynamically matches box width)
-        ax.plot([cx - hw/2 + 0.1, cx + hw/2 - 0.1], [heading_y - 0.3, heading_y - 0.3], 
+        ax.plot([cx - hw/2 - 0.1, cx + hw/2 + 0.1], [heading_y - 0.3, heading_y - 0.3], 
                 color=EDGE_COL, lw=1.5, zorder=2)
 
     # ==================================================================
@@ -173,7 +173,7 @@ def create_diagram(save_path, fmt="png"):
 
     # COL 5: OUTPUTS (Align exactly with LLMs)
     # They are slightly taller to fit all text
-    out_w, out_h = 3.6, 1.3
+    out_w, out_h = w5, 1.3
     b_out1 = box(cx5, b_mist["cy"], out_w, out_h, 
                  "Model Output Dirs\n/mistral/, /gemma3/, /llama3/\nbbox, heatmap, report", C_GRN)
     b_out2 = box(cx5, b_gemma["cy"], out_w, out_h, 
@@ -222,7 +222,7 @@ def create_diagram(save_path, fmt="png"):
     arr(slurm_lt, (mid_x_1, slurm_lt[1]), headless=True)
     arr((mid_x_1, slurm_lt[1]), (mid_x_1, sfs_rt[1]), headless=True)
     arr((mid_x_1, sfs_rt[1]), sfs_rt)
-    label((mid_x_1 + sfs_rt[0]) / 2, sfs_rt[1] + 0.1, "loaded\nby job", ha="center", va="bottom", fs=10)
+    label(5.8, sfs_rt[1] + 0.1, "loaded\nby job", ha="center", va="bottom", fs=10, weight="normal")
 
     # "Uses env": From Python venv (right) RIGHT, UP, RIGHT to SLURM (left)
     venv_rt = b_venv["r"]
@@ -231,7 +231,7 @@ def create_diagram(save_path, fmt="png"):
     arr(venv_rt, (mid_x_2, venv_rt[1]), headless=True)
     arr((mid_x_2, venv_rt[1]), (mid_x_2, dest_y_slurm), headless=True)
     arr((mid_x_2, dest_y_slurm), (b_slurm["l"][0], dest_y_slurm))
-    label((mid_x_2 + b_slurm["l"][0]) / 2, dest_y_slurm + 0.1, "Uses\nenv", ha="center", va="bottom", fs=10)
+    label(6.6, dest_y_slurm + 0.1, "Uses\nenv", ha="center", va="bottom", fs=10, weight="normal")
 
     # "orchestrate": SLURM (right) to HPC Run (left)
     arr(b_slurm["r"], (b_run["l"][0], b_slurm["cy"]), lbl="orchestrate", loff=(0, 0.2), lbl_va="bottom", lbl_fs=10)
@@ -239,11 +239,11 @@ def create_diagram(save_path, fmt="png"):
     # "reserve node": Dashed, from SLURM (top) UP, RIGHT, DOWN to H100 (top)
     sl_top = b_slurm["t"]
     hn_top = b_node["t"]
-    res_y = 11.4 # Lowered below horizontal line at 11.7
+    res_y = 11.2 # Lowered below horizontal line at 11.7
     arr(sl_top, (sl_top[0], res_y), dashed=True, headless=True)
     arr((sl_top[0], res_y), (hn_top[0], res_y), dashed=True, headless=True)
     arr((hn_top[0], res_y), hn_top, dashed=True)
-    label((sl_top[0] + hn_top[0]) / 2, res_y + 0.1, "reserve mode", va="bottom")
+    label((sl_top[0] + hn_top[0]) / 2, res_y + 0.1, "reserve mode", va="bottom", weight="normal", fs=10)
 
     # Worker Allocation to HPC Run: RIGHT, UP, RIGHT into bottom corner of HPC Run
     wk_rt = b_work["r"]
@@ -260,7 +260,7 @@ def create_diagram(save_path, fmt="png"):
     arr(queue_rt, (pass_x, queue_rt[1]), headless=True)
     arr((pass_x, queue_rt[1]), (pass_x, tile_lt[1]), headless=True)
     arr((pass_x, tile_lt[1]), tile_lt)
-    label((pass_x + tile_lt[0]) / 2, tile_lt[1] + 0.1, "read images", ha="center", va="bottom", fs=10)
+    label((pass_x + tile_lt[0]) / 2, tile_lt[1] + 0.1, "read images", ha="center", va="bottom", fs=10, weight="normal")
 
     # NO: tile discarded: Dashed LEFT from LLM Trigger Logic
     trig_lt = b_trig["l"]
@@ -268,7 +268,7 @@ def create_diagram(save_path, fmt="png"):
     arr(trig_lt, (trig_lt[0] - 0.5, trig_lt[1]), dashed=True, headless=True)
     arr((trig_lt[0] - 0.5, trig_lt[1]), (trig_lt[0] - 0.5, trig_lt[1] - 0.6), dashed=True, headless=True)
     arr((trig_lt[0] - 0.5, trig_lt[1] - 0.6), (no_end[0], trig_lt[1] - 0.6), dashed=True)
-    label((trig_lt[0] - 0.5 + no_end[0]) / 2, trig_lt[1] - 0.6 + 0.1, "NO: tile discarded", ha="center", va="bottom", fs=10)
+    label((trig_lt[0] - 0.5 + no_end[0]) / 2, trig_lt[1] - 0.6 + 0.1, "NO: tile discarded", ha="center", va="bottom", fs=10, weight="normal")
     
     # "prompt": Prompt Builder (right) RIGHT, UP, RIGHT to Ollama (left)
     prmpt_rt = b_prmpt["r"]
@@ -277,7 +277,7 @@ def create_diagram(save_path, fmt="png"):
     arr(prmpt_rt, (prompt_x, prmpt_rt[1]), headless=True)
     arr((prompt_x, prmpt_rt[1]), (prompt_x, oll_lt[1]), headless=True)
     arr((prompt_x, oll_lt[1]), oll_lt)
-    label((prompt_x + oll_lt[0]) / 2, oll_lt[1] + 0.1, "prompt", ha="center", va="bottom", fs=10)
+    label((prompt_x + oll_lt[0]) / 2, oll_lt[1] + 0.1, "prompt", ha="center", va="bottom", fs=10, weight="normal")
 
 
     # -- 12 Criss-Cross Arrows --
@@ -289,7 +289,7 @@ def create_diagram(save_path, fmt="png"):
             arr(llm["r"], out["l"], color=EDGE_COL, lw=1.0) # Black arrows for the bundle
 
     # "sequential dispatch" label above the bundle
-    label((b_mist["r"][0] + b_out1["l"][0]) / 2, b_mist["cy"] + 0.6, "sequential\ndispatch")
+    label((b_mist["r"][0] + b_out1["l"][0]) / 2, b_mist["cy"] + 0.6, "sequential\ndispatch", fs=10, weight="normal")
 
     # -- Scaling Results Feedback --
     # Dashed, from Advisory Reports (bottom) DOWN, LEFT, UP to Worker Allocation (bottom)
@@ -299,7 +299,7 @@ def create_diagram(save_path, fmt="png"):
     arr(adv_bot, (adv_bot[0], fb_y), dashed=True, headless=True, color=EDGE_COL)
     arr((adv_bot[0], fb_y), (work_bot[0], fb_y), dashed=True, headless=True, color=EDGE_COL)
     arr((work_bot[0], fb_y), work_bot, dashed=True, color=EDGE_COL)
-    label((adv_bot[0] + work_bot[0]) / 2, fb_y + 0.1, "scaling results inform worker allocation", fs=10, va="bottom")
+    label((adv_bot[0] + work_bot[0]) / 2, fb_y + 0.1, "scaling results inform worker allocation", fs=10, va="bottom", weight="normal")
 
 
     # ==================================================================
