@@ -10,8 +10,8 @@ import os
 
 plt.rcParams.update({
     "font.family":      "sans-serif",
-    "font.sans-serif":  ["Arial", "Tahoma", "DejaVu Sans"],
-    "font.size":        8,
+    "font.sans-serif":  ["Tahoma", "Arial", "DejaVu Sans"],
+    "font.size":        10,
     "text.usetex":      False,
     "figure.dpi":       300,
     "savefig.dpi":      300,
@@ -31,8 +31,8 @@ LABEL_COL = "#000000"
 
 
 def create_diagram(save_path, fmt="png"):
-    fig, ax = plt.subplots(figsize=(26, 11))
-    ax.set_xlim(0, 31)
+    fig, ax = plt.subplots(figsize=(27.5, 11))
+    ax.set_xlim(0, 32.5)
     ax.set_ylim(0, 14.5)
     ax.set_aspect("equal", adjustable="box")
     ax.axis("off")
@@ -40,7 +40,7 @@ def create_diagram(save_path, fmt="png"):
     ax.set_facecolor(BG_COL)
 
     # ── Text helper ──────────────────────────────────────────────────
-    def label(x, y, text, fs=7, color=LABEL_COL, weight="normal",
+    def label(x, y, text, fs=10, color=LABEL_COL, weight="bold",
               style="normal", ha="center", va="center"):
         ax.text(x, y, text, ha=ha, va=va, fontsize=fs,
                 fontweight=weight, color=color, fontstyle=style, zorder=5)
@@ -61,13 +61,13 @@ def create_diagram(save_path, fmt="png"):
         # Position title near the top of the box
         title_y = cy + (h/2) - 0.25
         ax.text(cx, title_y, title, ha='center', va='top', 
-                fontsize=9.5, fontweight='bold', zorder=5)
+                fontsize=11.5, fontweight='bold', zorder=5)
         
         # Position the rest of the lines with proper spacing
         if len(lines) > 1:
             sub = '\n'.join(lines[1:])
             ax.text(cx, title_y - 0.35, sub, ha='center', va='top', 
-                    fontsize=8, zorder=5, linespacing=1.4)
+                    fontsize=10.5, fontweight='bold', zorder=5, linespacing=1.4)
 
         return dict(cx=cx, cy=cy, w=w, h=h,
                     t=(cx, cy + h/2 + 0.08), b=(cx, cy - h/2 - 0.08),
@@ -75,7 +75,7 @@ def create_diagram(save_path, fmt="png"):
 
     # ── Arrow: straight ──────────────────────────────────────────────
     def arr(p1, p2, lbl=None, loff=(0, 0), color=EDGE_COL, lw=1.2,
-            dashed=False, headless=False, lbl_fs=7, lbl_ha="center", lbl_va="center"):
+            dashed=False, headless=False, lbl_fs=10, lbl_ha="center", lbl_va="center"):
         style = "-" if headless else "-|>"
         a = FancyArrowPatch(
             p1, p2,
@@ -94,20 +94,28 @@ def create_diagram(save_path, fmt="png"):
     #  COLUMN X-CENTRES & HEADINGS
     # ==================================================================
     cx1, cx2, cx3, cx4, cx5 = 3.0, 9.0, 16.0, 22.5, 28.5
+    # ==================================================================
+    #  BOXES WIDTHS & HEIGHTS
+    # ==================================================================
+    w1, h1 = 4.0, 1.4
+    w2, h2 = 3.8, 1.4
+    w3, h3 = 4.8, 1.4
+    w4, h4 = 3.8, 1.3
+    w5, h5 = 6.0, 1.4
+
     heading_y = 12.0
-    
     headings = [
-        (cx1, "INPUT DATA"),
-        (cx2, "SLURM SCHEDULER"),
-        (cx3, "HPCRoseDetector CLASS"),
-        (cx4, "H100 GPU WORKERS"),
-        (cx5, "output and metrics")
+        (cx1, "INPUT DATA", w1),
+        (cx2, "SLURM SCHEDULER", w2),
+        (cx3, "HPCRoseDetector CLASS", w3),
+        (cx4, "H100 GPU WORKERS", w4),
+        (cx5, "output and metrics", 6.0) # w5 will be evaluated later, hardcode for now
     ]
     
-    for cx, txt in headings:
-        label(cx, heading_y, txt, fs=9, weight="bold")
-        # Horizontal line below heading
-        ax.plot([cx - 1.8, cx + 1.8], [heading_y - 0.3, heading_y - 0.3], 
+    for cx, txt, hw in headings:
+        label(cx, heading_y, txt, fs=12, weight="bold")
+        # Horizontal line below heading (dynamically matches box width)
+        ax.plot([cx - hw/2 + 0.1, cx + hw/2 - 0.1], [heading_y - 0.3, heading_y - 0.3], 
                 color=EDGE_COL, lw=1.5, zorder=2)
 
     # ==================================================================
@@ -120,14 +128,8 @@ def create_diagram(save_path, fmt="png"):
     y_r5 = 2.2   # Row 5
 
     # ==================================================================
-    #  BOXES
+    #  BOXES (Draw logic)
     # ==================================================================
-    w1, h1 = 3.4, 1.4
-    w2, h2 = 3.6, 1.4
-    w3, h3 = 4.2, 1.4
-    w4, h4 = 3.4, 1.3
-    w5, h5 = 3.4, 1.4
-
     # COL 1: INPUT DATA
     b_uav = box(cx1, y_r1, w1, h1, 
                 "UAV Seasonal Dataset\n3,000+ orthomosaics\n300-acre nursery, 2.5cm GSD", C_IN)
@@ -220,7 +222,7 @@ def create_diagram(save_path, fmt="png"):
     arr(slurm_lt, (mid_x_1, slurm_lt[1]), headless=True)
     arr((mid_x_1, slurm_lt[1]), (mid_x_1, sfs_rt[1]), headless=True)
     arr((mid_x_1, sfs_rt[1]), sfs_rt)
-    label((mid_x_1 + sfs_rt[0]) / 2, sfs_rt[1] + 0.1, "loaded by job", ha="center", va="bottom", fs=7)
+    label((mid_x_1 + sfs_rt[0]) / 2, sfs_rt[1] + 0.1, "loaded\nby job", ha="center", va="bottom", fs=10)
 
     # "Uses env": From Python venv (right) RIGHT, UP, RIGHT to SLURM (left)
     venv_rt = b_venv["r"]
@@ -229,10 +231,10 @@ def create_diagram(save_path, fmt="png"):
     arr(venv_rt, (mid_x_2, venv_rt[1]), headless=True)
     arr((mid_x_2, venv_rt[1]), (mid_x_2, dest_y_slurm), headless=True)
     arr((mid_x_2, dest_y_slurm), (b_slurm["l"][0], dest_y_slurm))
-    label((mid_x_2 + b_slurm["l"][0]) / 2, dest_y_slurm + 0.1, "Uses env", ha="center", va="bottom", fs=7)
+    label((mid_x_2 + b_slurm["l"][0]) / 2, dest_y_slurm + 0.1, "Uses\nenv", ha="center", va="bottom", fs=10)
 
     # "orchestrate": SLURM (right) to HPC Run (left)
-    arr(b_slurm["r"], (b_run["l"][0], b_slurm["cy"]), lbl="orchestrate", loff=(0, 0.2), lbl_va="bottom", lbl_fs=7)
+    arr(b_slurm["r"], (b_run["l"][0], b_slurm["cy"]), lbl="orchestrate", loff=(0, 0.2), lbl_va="bottom", lbl_fs=10)
 
     # "reserve node": Dashed, from SLURM (top) UP, RIGHT, DOWN to H100 (top)
     sl_top = b_slurm["t"]
@@ -258,15 +260,15 @@ def create_diagram(save_path, fmt="png"):
     arr(queue_rt, (pass_x, queue_rt[1]), headless=True)
     arr((pass_x, queue_rt[1]), (pass_x, tile_lt[1]), headless=True)
     arr((pass_x, tile_lt[1]), tile_lt)
-    label((pass_x + tile_lt[0]) / 2, tile_lt[1] + 0.1, "read images", ha="center", va="bottom", fs=7)
+    label((pass_x + tile_lt[0]) / 2, tile_lt[1] + 0.1, "read images", ha="center", va="bottom", fs=10)
 
     # NO: tile discarded: Dashed LEFT from LLM Trigger Logic
     trig_lt = b_trig["l"]
-    no_end = (trig_lt[0] - 2.0, trig_lt[1]) # Stretch dashed line 2.0 units left
+    no_end = (trig_lt[0] - 2.5, trig_lt[1]) # Stretch dashed line 2.5 units left
     arr(trig_lt, (trig_lt[0] - 0.5, trig_lt[1]), dashed=True, headless=True)
     arr((trig_lt[0] - 0.5, trig_lt[1]), (trig_lt[0] - 0.5, trig_lt[1] - 0.6), dashed=True, headless=True)
     arr((trig_lt[0] - 0.5, trig_lt[1] - 0.6), (no_end[0], trig_lt[1] - 0.6), dashed=True)
-    label((trig_lt[0] - 0.5 + no_end[0]) / 2, trig_lt[1] - 0.6 + 0.1, "NO: tile discarded", ha="center", va="bottom", fs=7)
+    label((trig_lt[0] - 0.5 + no_end[0]) / 2, trig_lt[1] - 0.6 + 0.1, "NO: tile discarded", ha="center", va="bottom", fs=10)
     
     # "prompt": Prompt Builder (right) RIGHT, UP, RIGHT to Ollama (left)
     prmpt_rt = b_prmpt["r"]
@@ -275,7 +277,7 @@ def create_diagram(save_path, fmt="png"):
     arr(prmpt_rt, (prompt_x, prmpt_rt[1]), headless=True)
     arr((prompt_x, prmpt_rt[1]), (prompt_x, oll_lt[1]), headless=True)
     arr((prompt_x, oll_lt[1]), oll_lt)
-    label((prompt_x + oll_lt[0]) / 2, oll_lt[1] + 0.1, "prompt", ha="center", va="bottom", fs=7)
+    label((prompt_x + oll_lt[0]) / 2, oll_lt[1] + 0.1, "prompt", ha="center", va="bottom", fs=10)
 
 
     # -- 12 Criss-Cross Arrows --
@@ -297,7 +299,7 @@ def create_diagram(save_path, fmt="png"):
     arr(adv_bot, (adv_bot[0], fb_y), dashed=True, headless=True, color=EDGE_COL)
     arr((adv_bot[0], fb_y), (work_bot[0], fb_y), dashed=True, headless=True, color=EDGE_COL)
     arr((work_bot[0], fb_y), work_bot, dashed=True, color=EDGE_COL)
-    label((adv_bot[0] + work_bot[0]) / 2, fb_y + 0.1, "scaling results inform worker allocation", fs=7, va="bottom")
+    label((adv_bot[0] + work_bot[0]) / 2, fb_y + 0.1, "scaling results inform worker allocation", fs=10, va="bottom")
 
 
     # ==================================================================
