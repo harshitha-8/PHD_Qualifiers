@@ -231,7 +231,7 @@ def create_diagram(save_path, fmt="png"):
     arr(venv_rt, (mid_x_2, venv_rt[1]), headless=True)
     arr((mid_x_2, venv_rt[1]), (mid_x_2, dest_y_slurm), headless=True)
     arr((mid_x_2, dest_y_slurm), (b_slurm["l"][0], dest_y_slurm))
-    label(6.6, dest_y_slurm + 0.1, "Uses\nenv", ha="center", va="bottom", fs=10, weight="normal")
+    label(6.6, dest_y_slurm + 0.1, "users\nenv", ha="center", va="bottom", fs=10, weight="normal")
 
     # "orchestrate": SLURM (right) to HPC Run (left)
     arr(b_slurm["r"], (b_run["l"][0], b_slurm["cy"]), lbl="orchestrate", loff=(0, 0.2), lbl_va="bottom", lbl_fs=10)
